@@ -15,6 +15,7 @@ import AgendaView from './components/AgendaView';
 import ClientesView from './components/ClientesView';
 import ServicosView from './components/ServicosView';
 import CaixaView from './components/CaixaView';
+import TeamView from './components/TeamView';
 import ConfiguracoesView from './components/ConfiguracoesView';
 import PublicBookingView from './components/PublicBookingView';
 import SaaSAdminView from './components/SaaSAdminView';
@@ -35,7 +36,8 @@ import {
   WifiOff,
   User as UserIcon,
   MessageSquare,
-  Globe
+  Globe,
+  UserCog
 } from 'lucide-react';
 
 export default function App() {
@@ -214,6 +216,7 @@ export default function App() {
       { id: 'clientes', label: 'Clientes', icon: Users },
       { id: 'servicos', label: 'Serviços', icon: Briefcase },
       { id: 'caixa', label: 'Fluxo de Caixa', icon: Wallet },
+      { id: 'equipe', label: 'Equipe', icon: UserCog },
       { id: 'configuracoes', label: 'Configurações', icon: Settings },
     ];
   };
@@ -539,6 +542,14 @@ export default function App() {
               onRefresh={triggerRefresh}
               openNewExpenseDirect={directOpenExpense}
               onCloseExpenseDirect={() => setDirectOpenExpense(false)}
+            />
+          )}
+
+          {activeTab === 'equipe' && (
+            <TeamView
+              currentUserId={user?.id || ''}
+              refreshTrigger={refreshTrigger}
+              onRefresh={triggerRefresh}
             />
           )}
 

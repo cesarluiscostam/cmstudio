@@ -20,7 +20,9 @@ import {
   Tag,
   ShoppingBag,
   Info,
-  Clock
+  Clock,
+  Edit2,
+  Package
 } from 'lucide-react';
 
 interface CaixaViewProps {
@@ -43,7 +45,15 @@ export default function CaixaView({
   const [loading, setLoading] = useState(true);
   const [showManualModal, setShowManualModal] = useState(false);
   const [showSaleModal, setShowSaleModal] = useState(false);
+  const [showProductsModal, setShowProductsModal] = useState(false);
+  const [showProductFormModal, setShowProductFormModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
+
+  // Product Form
+  const [prodName, setProdName] = useState('');
+  const [prodPrice, setProdPrice] = useState(0);
+  const [prodStock, setProdStock] = useState(0);
 
   // Manual Transaction Form
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -130,6 +140,57 @@ export default function CaixaView({
       loadData();
     } catch (err: any) {
       showToast(err.message || 'Erro ao registrar venda de produto.', 'error');
+    }
+  };
+
+  const handleOpenAddProduct = () => {
+    setEditingProduct(null);
+    setProdName('');
+    setProdPrice(0);
+    setProdStock(0);
+    setShowProductFormModal(true);
+  };
+
+  const handleOpenEditProduct = (p: Product) => {
+    setEditingProduct(p);
+    setProdName(p.name);
+    setProdPrice(p.price);
+    setProdStock(p.stock);
+    setShowProductFormModal(true);
+  };
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prodName || prodPrice < 0 || prodStock < 0) {
+      showToast('Preencha os dados do produto corretamente.', 'error');
+      return;
+    }
+
+    try {
+      if (editingProduct) {
+        await api.updateProduct(editingProduct.id, { name: prodName, price: prodPrice, stock: prodStock });
+      } else {
+        await api.createProduct({ name: prodName, price: prodPrice, stock: prodStock });
+      }
+      setShowProductFormModal(false);
+      loadData();
+    } catch (err) {
+      showToast('Erro ao salvar produto.', 'error');
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    const confirmed = await confirmDialog('Deseja excluir permanentemente este produto?', {
+      danger: true,
+      confirmLabel: 'Excluir',
+    });
+    if (confirmed) {
+      try {
+        await api.deleteProduct(id);
+        loadData();
+      } catch (err) {
+        showToast('Erro ao excluir produto.', 'error');
+      }
     }
   };
 
@@ -276,6 +337,12 @@ export default function CaixaView({
 
         {/* Quick Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setShowProductsModal(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition cursor-pointer"
+          >
+            <Package className="h-3.5 w-3.5 text-slate-400" /> Gerenciar Produtos
+          </button>
           <button
             onClick={() => setShowSaleModal(true)}
             className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition cursor-pointer"
@@ -519,58 +586,78 @@ export default function CaixaView({
             </div>
 
             <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">PRODUTO</label>
-                <select
-                  required
-                  value={selectedProduct}
-                  onChange={(e) => setSelectedProduct(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
-                >
-                  <option value="">-- Selecione o Produto --</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id} disabled={p.stock <= 0}>
-                      {p.name} (R$ {p.price.toFixed(2)}) • {p.stock > 0 ? `Estoque: ${p.stock} un` : 'ESGOTADO'}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">QUANTIDADE</label>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                  />
+              {products.length === 0 ? (
+                <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-center space-y-2">
+                  <p className="text-xs text-amber-800 font-semibold">Você ainda não cadastrou nenhum produto.</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSaleModal(false);
+                      handleOpenAddProduct();
+                    }}
+                    className="text-xs font-bold text-brand-primary hover:underline cursor-pointer"
+                  >
+                    Cadastrar primeiro produto
+                  </button>
                 </div>
+              ) : (
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">DATA DA VENDA</label>
-                  <input
-                    type="date"
+                  <label className="block text-xs font-bold text-slate-400 mb-1">PRODUTO</label>
+                  <select
                     required
-                    value={saleDate}
-                    onChange={(e) => setSaleDate(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                  />
+                    value={selectedProduct}
+                    onChange={(e) => setSelectedProduct(e.target.value)}
+                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                  >
+                    <option value="">-- Selecione o Produto --</option>
+                    {products.map(p => (
+                      <option key={p.id} value={p.id} disabled={p.stock <= 0}>
+                        {p.name} (R$ {p.price.toFixed(2)}) • {p.stock > 0 ? `Estoque: ${p.stock} un` : 'ESGOTADO'}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </div>
+              )}
 
-              {/* Instant calculation summary */}
-              {selectedProduct && (
-                <div className="rounded-lg bg-slate-50 border border-slate-200 p-4 flex items-center justify-between text-sm animate-fade-in">
-                  <div className="flex items-center gap-2">
-                    <Info className="h-4 w-4 text-slate-400" />
-                    <span className="text-slate-500">Valor Total da Venda:</span>
+              {products.length > 0 && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">QUANTIDADE</label>
+                      <input
+                        type="number"
+                        required
+                        min={1}
+                        value={quantity}
+                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 mb-1">DATA DA VENDA</label>
+                      <input
+                        type="date"
+                        required
+                        value={saleDate}
+                        onChange={(e) => setSaleDate(e.target.value)}
+                        className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      />
+                    </div>
                   </div>
-                  <span className="font-extrabold text-brand-primary text-base">
-                    R$ {((products.find(p => p.id === selectedProduct)?.price || 0) * quantity).toFixed(2)}
-                  </span>
-                </div>
+
+                  {/* Instant calculation summary */}
+                  {selectedProduct && (
+                    <div className="rounded-lg bg-slate-50 border border-slate-200 p-4 flex items-center justify-between text-sm animate-fade-in">
+                      <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-slate-400" />
+                        <span className="text-slate-500">Valor Total da Venda:</span>
+                      </div>
+                      <span className="font-extrabold text-brand-primary text-base">
+                        R$ {((products.find(p => p.id === selectedProduct)?.price || 0) * quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -582,11 +669,149 @@ export default function CaixaView({
               >
                 Cancelar
               </button>
+              {products.length > 0 && (
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition shadow-xs"
+                >
+                  Registrar Venda
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL 3: Manage Products (list) */}
+      {showProductsModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl">
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900">Gerenciar Produtos</h3>
+              <button
+                type="button"
+                onClick={() => setShowProductsModal(false)}
+                className="text-slate-400 hover:text-slate-950 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <button
+                type="button"
+                onClick={handleOpenAddProduct}
+                className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
+              >
+                <Plus className="h-4 w-4" /> Novo Produto
+              </button>
+
+              {products.length === 0 ? (
+                <p className="text-center text-sm text-slate-400 py-8">Nenhum produto cadastrado ainda.</p>
+              ) : (
+                <div className="divide-y divide-slate-100 max-h-[340px] overflow-y-auto">
+                  {products.map((p) => (
+                    <div key={p.id} className="py-3 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">{p.name}</p>
+                        <p className="text-xs text-slate-500">R$ {p.price.toFixed(2)} • Estoque: {p.stock} un</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          onClick={() => handleOpenEditProduct(p)}
+                          className="p-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-brand-primary transition cursor-pointer"
+                          title="Editar Produto"
+                        >
+                          <Edit2 className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(p.id)}
+                          className="p-2 bg-white border border-slate-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 transition cursor-pointer"
+                          title="Excluir Produto"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: Add/Edit Product Form */}
+      {showProductFormModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-[60] animate-fade-in">
+          <form
+            onSubmit={handleSaveProduct}
+            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+          >
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h3>
+              <button
+                type="button"
+                onClick={() => setShowProductFormModal(false)}
+                className="text-slate-400 hover:text-slate-950 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO PRODUTO</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Pomada Modeladora"
+                  value={prodName}
+                  onChange={(e) => setProdName(e.target.value)}
+                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">PREÇO (R$)</label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    step={0.01}
+                    value={prodPrice || ''}
+                    onChange={(e) => setProdPrice(Number(e.target.value))}
+                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">ESTOQUE (UN)</label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    value={prodStock || ''}
+                    onChange={(e) => setProdStock(Number(e.target.value))}
+                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowProductFormModal(false)}
+                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+              >
+                Cancelar
+              </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition shadow-xs"
               >
-                Registrar Venda
+                Salvar Produto
               </button>
             </div>
           </form>

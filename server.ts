@@ -4,6 +4,7 @@
  */
 
 import 'dotenv/config';
+import crypto from 'crypto';
 import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
@@ -473,6 +474,19 @@ app.put('/api/clients/:id', validateBody(schemas.updateClient), ah(async (req, r
   res.json(updated);
 }));
 
+app.delete('/api/clients/:id', ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const { id } = req.params;
+  const client = await dbOperations.getClientById(id);
+
+  if (!client || client.companyId !== companyId) {
+    return res.status(404).json({ error: 'Cliente não encontrado.' });
+  }
+
+  await dbOperations.deleteClient(id);
+  res.json({ success: true });
+}));
+
 // SERVICES
 app.get('/api/services', ah(async (req, res) => {
   const { companyId } = getTenant(req);
@@ -586,6 +600,19 @@ app.put('/api/products/:id', validateBody(schemas.updateProduct), ah(async (req,
   res.json(updated);
 }));
 
+app.delete('/api/products/:id', ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const { id } = req.params;
+  const prod = await dbOperations.getProductById(id);
+
+  if (!prod || prod.companyId !== companyId) {
+    return res.status(404).json({ error: 'Produto não encontrado.' });
+  }
+
+  await dbOperations.deleteProduct(id);
+  res.json({ success: true });
+}));
+
 app.get('/api/sales', ah(async (req, res) => {
   const { companyId } = getTenant(req);
   res.json(await dbOperations.getSales(companyId));
@@ -670,7 +697,8 @@ app.get('/api/saas/dashboard', ah(async (req, res) => {
       appointmentsCount: appointments.length,
       monthlyRevenue: companyMonthlyRevenue,
       managerEmail: manager ? manager.email : 'Sem gerente',
-      managerName: manager ? manager.name : 'Sem nome'
+      managerName: manager ? manager.name : 'Sem nome',
+      users: compUsers.map(sanitizeUser)
     };
   }));
 
@@ -783,6 +811,25 @@ app.delete('/api/saas/companies/:id', ah(async (req, res) => {
   res.json({ success: true, message: 'Empresa e todos os seus dados vinculados foram removidos.' });
 }));
 
+// Generates a temporary password for a user who's locked out (no self-service e-mail flow exists yet).
+// The plain-text password is returned once so the super admin can relay it to the user directly;
+// needsPasswordChange forces them through the existing forced-change screen on next login.
+app.post('/api/saas/users/:id/reset-password', ah(async (req, res) => {
+  const { id } = req.params;
+  const user = await dbOperations.getUserById(id);
+  if (!user) {
+    return res.status(404).json({ error: 'Usuário não encontrado.' });
+  }
+
+  const tempPassword = crypto.randomBytes(6).toString('base64url');
+  await dbOperations.updateUser(id, {
+    password: await hashPassword(tempPassword),
+    needsPasswordChange: true
+  });
+
+  res.json({ tempPassword });
+}));
+
 // ==========================================
 // GERENTE (MANAGER) ENDPOINTS
 // ==========================================
@@ -833,6 +880,71 @@ app.post('/api/company/cover-photo', requireAuth, (req, res) => {
     res.json({ coverPhotoUrl: `/uploads/${req.file.filename}` });
   });
 });
+
+// ==========================================
+// TEAM (STAFF MANAGEMENT)
+// ==========================================
+
+app.use('/api/team', requireAuth, requireRole('manager', 'admin'));
+
+app.get('/api/team', ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const users = await dbOperations.getUsers(companyId);
+  res.json(users.map(sanitizeUser));
+}));
+
+app.post('/api/team', validateBody(schemas.createTeamMember), ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const { name, email, phone, password } = req.body;
+
+  const existing = await dbOperations.getUserByEmail(email);
+  if (existing) {
+    return res.status(400).json({ error: 'Este e-mail já está cadastrado.' });
+  }
+
+  const user = await dbOperations.createUser({
+    id: `user-${Date.now()}`,
+    companyId,
+    name,
+    email,
+    phone,
+    role: 'staff',
+    password: await hashPassword(password),
+    needsPasswordChange: false,
+    createdAt: new Date().toISOString()
+  });
+
+  res.status(201).json(sanitizeUser(user));
+}));
+
+app.put('/api/team/:id', validateBody(schemas.updateTeamMember), ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const { id } = req.params;
+  const member = await dbOperations.getUserById(id);
+
+  if (!member || member.companyId !== companyId) {
+    return res.status(404).json({ error: 'Membro da equipe não encontrado.' });
+  }
+
+  const updated = await dbOperations.updateUser(id, req.body);
+  res.json(sanitizeUser(updated!));
+}));
+
+app.delete('/api/team/:id', ah(async (req, res) => {
+  const { companyId, userId } = getTenant(req);
+  const { id } = req.params;
+  const member = await dbOperations.getUserById(id);
+
+  if (!member || member.companyId !== companyId) {
+    return res.status(404).json({ error: 'Membro da equipe não encontrado.' });
+  }
+  if (id === userId) {
+    return res.status(400).json({ error: 'Você não pode remover o seu próprio acesso.' });
+  }
+
+  await dbOperations.deleteUser(id);
+  res.json({ success: true });
+}));
 
 // ==========================================
 // VITE CLIENT INTEGRATION

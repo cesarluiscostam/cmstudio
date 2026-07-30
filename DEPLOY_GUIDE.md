@@ -43,9 +43,6 @@ DATABASE_URL="postgresql://usuario:senha@host/dbname?sslmode=require"
 # e nunca reaproveite o mesmo secret entre ambientes de dev e produção.
 JWT_SECRET="GERE_UM_VALOR_ALEATORIO_FORTE_AQUI"
 
-# Chave da API Gemini, se as funcionalidades de IA estiverem em uso
-GEMINI_API_KEY="sua-chave-aqui"
-
 # URL pública onde a aplicação está hospedada
 APP_URL="https://sua-barbearia-url.com.br"
 ```
@@ -76,7 +73,7 @@ cd /var/www/cmstudio
 cp .env.example .env
 nano .env
 ```
-Preencha `DATABASE_URL`, `JWT_SECRET`, `GEMINI_API_KEY` e `APP_URL` conforme a seção acima.
+Preencha `DATABASE_URL`, `JWT_SECRET` e `APP_URL` conforme a seção acima.
 
 ### 4. Gerar certificado SSL (Let's Encrypt / Certbot)
 ```bash

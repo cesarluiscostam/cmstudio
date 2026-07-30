@@ -180,6 +180,18 @@ export const schemas = {
     instagram: z.string().optional(),
   }),
 
+  createTeamMember: z.object({
+    name: nonEmpty,
+    email: z.string().trim().email('E-mail inválido.'),
+    phone: z.string().optional(),
+    password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres.'),
+  }),
+
+  updateTeamMember: z.object({
+    name: z.string().optional(),
+    phone: z.string().optional(),
+  }),
+
   availabilityQuery: z.object({
     date: dateStr,
     durationMin: z.coerce.number().positive().optional(),

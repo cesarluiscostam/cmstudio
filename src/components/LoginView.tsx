@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { api } from '../lib/api';
-import { AlertCircle, ArrowRight, ShieldAlert } from 'lucide-react';
+import { AlertCircle, ArrowRight, ShieldAlert, Info } from 'lucide-react';
 
 interface LoginViewProps {
   onSuccess: (user: any, company: any) => void;
@@ -18,7 +18,6 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
-  const [forgotSuccess, setForgotSuccess] = useState(false);
 
   // States for force password change flow (first access)
   const [forceChangeMode, setForceChangeMode] = useState(false);
@@ -83,12 +82,6 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleForgotSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotSuccess(true);
-    setError('');
   };
 
 
@@ -195,72 +188,27 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
           <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-slate-900">
             Recuperar senha
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-600">
-            Digite seu e-mail para receber as instruções de recuperação.
-          </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow-sm border border-slate-100 rounded-2xl sm:px-10">
-            {forgotSuccess ? (
-              <div className="rounded-xl bg-emerald-50 p-4 border border-emerald-100">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <span className="text-emerald-500 font-bold">✓</span>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-emerald-800">E-mail enviado!</h3>
-                    <div className="mt-2 text-sm text-emerald-700">
-                      <p>Se este e-mail estiver cadastrado, você receberá um link de recuperação em instantes.</p>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setForgotMode(false);
-                    setForgotSuccess(false);
-                  }}
-                  className="mt-4 w-full flex justify-center py-2 px-4 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none"
-                >
-                  Voltar para o login
-                </button>
+            <div className="rounded-xl bg-indigo-50 p-4 border border-indigo-100 flex gap-3">
+              <Info className="h-5 w-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-indigo-900">
+                <p className="font-medium">Ainda não temos redefinição automática por e-mail.</p>
+                <p className="mt-1 text-indigo-700">
+                  Entre em contato com o administrador da sua barbearia ou com o suporte da plataforma
+                  para receber uma senha temporária.
+                </p>
               </div>
-            ) : (
-              <form className="space-y-6" onSubmit={handleForgotSubmit}>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                    E-mail corporativo
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="seu@email.com"
-                      className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
-                  >
-                    Enviar instruções
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setForgotMode(false)}
-                    className="w-full flex justify-center py-2.5 px-4 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </form>
-            )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setForgotMode(false)}
+              className="mt-4 w-full flex justify-center py-2.5 px-4 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none"
+            >
+              Voltar para o login
+            </button>
           </div>
         </div>
       </div>

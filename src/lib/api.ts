@@ -245,6 +245,15 @@ export const api = {
     return res.json();
   },
 
+  deleteClient: async (id: string) => {
+    const res = await fetch(`${API_BASE}/clients/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Erro ao excluir cliente');
+    return res.json();
+  },
+
   // Services
   getServices: async () => {
     const res = await fetch(`${API_BASE}/services`, {
@@ -330,6 +339,25 @@ export const api = {
       body: JSON.stringify(prodData),
     });
     if (!res.ok) throw new Error('Erro ao cadastrar produto');
+    return res.json();
+  },
+
+  updateProduct: async (id: string, updated: any) => {
+    const res = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updated),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar produto');
+    return res.json();
+  },
+
+  deleteProduct: async (id: string) => {
+    const res = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Erro ao excluir produto');
     return res.json();
   },
 
@@ -426,6 +454,65 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Erro ao remover empresa parceira');
+    }
+    return res.json();
+  },
+
+  resetUserPassword: async (userId: string) => {
+    const res = await fetch(`${API_BASE}/saas/users/${userId}/reset-password`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao redefinir senha do usuário');
+    }
+    return res.json();
+  },
+
+  // Team (staff management)
+  getTeam: async () => {
+    const res = await fetch(`${API_BASE}/team`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Erro ao carregar equipe');
+    return res.json();
+  },
+
+  createTeamMember: async (data: any) => {
+    const res = await fetch(`${API_BASE}/team`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao adicionar membro da equipe');
+    }
+    return res.json();
+  },
+
+  updateTeamMember: async (id: string, data: any) => {
+    const res = await fetch(`${API_BASE}/team/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao atualizar membro da equipe');
+    }
+    return res.json();
+  },
+
+  deleteTeamMember: async (id: string) => {
+    const res = await fetch(`${API_BASE}/team/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao remover membro da equipe');
     }
     return res.json();
   },

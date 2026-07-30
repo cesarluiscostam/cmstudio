@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import { useToast } from '../lib/ui';
+import { useToast, useConfirm } from '../lib/ui';
 import { Client, Appointment } from '../types';
 import {
   Users,
@@ -17,7 +17,9 @@ import {
   Calendar,
   MessageSquare,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 
 interface ClientesViewProps {
@@ -27,11 +29,13 @@ interface ClientesViewProps {
 
 export default function ClientesView({ refreshTrigger, onRefresh }: ClientesViewProps) {
   const showToast = useToast();
+  const confirmDialog = useConfirm();
   const [clients, setClients] = useState<Client[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   // Form Fields
@@ -39,6 +43,12 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Edit Form Fields
+  const [editName, setEditName] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editBirthDate, setEditBirthDate] = useState('');
+  const [editNotes, setEditNotes] = useState('');
 
   const loadData = async () => {
     try {
@@ -78,6 +88,57 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
       loadData();
     } catch (err) {
       showToast('Erro ao cadastrar cliente.', 'error');
+    }
+  };
+
+  const handleOpenEditClient = () => {
+    if (!selectedClient) return;
+    setEditName(selectedClient.name);
+    setEditPhone(selectedClient.phone);
+    setEditBirthDate(selectedClient.birthDate || '');
+    setEditNotes(selectedClient.notes || '');
+    setShowEditModal(true);
+  };
+
+  const handleUpdateClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClient) return;
+    if (!editName || !editPhone) {
+      showToast('Nome e telefone são campos obrigatórios.', 'error');
+      return;
+    }
+
+    try {
+      const updated = await api.updateClient(selectedClient.id, {
+        name: editName,
+        phone: editPhone,
+        birthDate: editBirthDate,
+        notes: editNotes
+      });
+      setSelectedClient(updated);
+      setShowEditModal(false);
+      onRefresh();
+      loadData();
+    } catch (err) {
+      showToast('Erro ao atualizar cliente.', 'error');
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    if (!selectedClient) return;
+    const confirmed = await confirmDialog(
+      `Deseja excluir permanentemente o cliente "${selectedClient.name}"? Isso não afeta o histórico de agendamentos já registrado.`,
+      { danger: true, confirmLabel: 'Excluir' }
+    );
+    if (confirmed) {
+      try {
+        await api.deleteClient(selectedClient.id);
+        setSelectedClient(null);
+        onRefresh();
+        loadData();
+      } catch (err) {
+        showToast('Erro ao excluir cliente.', 'error');
+      }
     }
   };
 
@@ -174,6 +235,22 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
                         <h3 className="font-bold text-slate-900 text-base">{selectedClient.name}</h3>
                         <p className="text-xs text-slate-500">Membro desde {new Date(selectedClient.createdAt).toLocaleDateString('pt-BR')}</p>
                       </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <button
+                        onClick={handleOpenEditClient}
+                        className="p-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-brand-primary transition cursor-pointer"
+                        title="Editar Cliente"
+                      >
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={handleDeleteClient}
+                        className="p-2 bg-white border border-slate-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 transition cursor-pointer"
+                        title="Excluir Cliente"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
 
@@ -327,6 +404,87 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
                 className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition shadow-xs"
               >
                 Salvar Cadastro
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL: Edit Client Dialog */}
+      {showEditModal && selectedClient && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+          <form
+            onSubmit={handleUpdateClient}
+            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+          >
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900">Editar Cliente</h3>
+              <button
+                type="button"
+                onClick={() => setShowEditModal(false)}
+                className="text-slate-400 hover:text-slate-950 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO CLIENTE</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">CELULAR / TELEFONE</label>
+                <input
+                  type="tel"
+                  required
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">DATA DE NASCIMENTO (OPCIONAL)</label>
+                <input
+                  type="date"
+                  value={editBirthDate}
+                  onChange={(e) => setEditBirthDate(e.target.value)}
+                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1">OBSERVAÇÕES / PREFERÊNCIAS</label>
+                <textarea
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  rows={3}
+                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition shadow-xs"
+              >
+                Salvar Alterações
               </button>
             </div>
           </form>

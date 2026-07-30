@@ -51,6 +51,8 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteConfirmName, setDeleteConfirmName] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [teamModalCompany, setTeamModalCompany] = useState<any | null>(null);
+  const [resetResult, setResetResult] = useState<{ userId: string; tempPassword: string } | null>(null);
 
   // Form states
   const [formName, setFormName] = useState('');
@@ -161,6 +163,15 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
       onRefresh();
     } catch (err: any) {
       showToast(err.message || 'Erro ao salvar empresa parceira', 'error');
+    }
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    try {
+      const res = await api.resetUserPassword(userId);
+      setResetResult({ userId, tempPassword: res.tempPassword });
+    } catch (err: any) {
+      showToast(err.message || 'Erro ao redefinir senha do usuário', 'error');
     }
   };
 
@@ -484,6 +495,13 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
                     <td className="py-4.5 px-6 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={() => { setTeamModalCompany(comp); setResetResult(null); }}
+                          className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                          title="Ver equipe / resetar senha"
+                        >
+                          <Users className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleOpenEditModal(comp)}
                           className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition cursor-pointer"
                           title="Editar empresa"
@@ -727,6 +745,65 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Team & Password Reset */}
+      {teamModalCompany && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden">
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Equipe — {teamModalCompany.name}</h3>
+                <p className="text-xs text-slate-400">{(teamModalCompany.users || []).length} usuário(s) com acesso</p>
+              </div>
+              <button
+                onClick={() => { setTeamModalCompany(null); setResetResult(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-150 rounded-xl transition cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-3 max-h-[420px] overflow-y-auto">
+              {(teamModalCompany.users || []).length === 0 ? (
+                <p className="text-center text-sm text-slate-400 py-8">Nenhum usuário encontrado para esta empresa.</p>
+              ) : (
+                (teamModalCompany.users || []).map((u: any) => (
+                  <div key={u.id} className="border border-slate-200 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-slate-900 truncate">{u.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">
+                          {u.role}
+                        </span>
+                        <button
+                          onClick={() => handleResetPassword(u.id)}
+                          className="text-[10px] font-bold text-indigo-600 hover:underline cursor-pointer whitespace-nowrap"
+                        >
+                          Resetar Senha
+                        </button>
+                      </div>
+                    </div>
+                    {resetResult?.userId === u.id && (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 text-xs space-y-1">
+                        <p className="text-emerald-800 font-semibold">Nova senha temporária gerada:</p>
+                        <p className="font-mono text-sm text-emerald-950 bg-white px-2 py-1 rounded border border-emerald-100 inline-block">
+                          {resetResult.tempPassword}
+                        </p>
+                        <p className="text-emerald-700">
+                          Repasse essa senha ao usuário por um canal seguro. Ele será obrigado a trocá-la no próximo login.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}

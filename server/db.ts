@@ -245,6 +245,10 @@ export const dbOperations = {
     );
     return dbOperations.getUserById(id);
   },
+  deleteUser: async (id: string): Promise<boolean> => {
+    await pool.query('DELETE FROM users WHERE id = $1', [id]);
+    return true;
+  },
 
   // Settings
   getSettings: async (companyId: string): Promise<CompanySettings | null> => {
@@ -336,6 +340,10 @@ export const dbOperations = {
     );
     return dbOperations.getClientById(id);
   },
+  deleteClient: async (id: string): Promise<boolean> => {
+    await pool.query('DELETE FROM clients WHERE id = $1', [id]);
+    return true;
+  },
 
   // Products
   getProducts: async (companyId: string): Promise<Product[]> => {
@@ -359,6 +367,10 @@ export const dbOperations = {
     const merged = { ...existing, ...updated };
     await pool.query(`UPDATE products SET name=$2, price=$3, stock=$4 WHERE id=$1`, [id, merged.name, merged.price, merged.stock]);
     return dbOperations.getProductById(id);
+  },
+  deleteProduct: async (id: string): Promise<boolean> => {
+    await pool.query('DELETE FROM products WHERE id = $1', [id]);
+    return true;
   },
 
   // Sales

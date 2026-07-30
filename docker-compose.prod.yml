@@ -16,7 +16,6 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
       # Uploaded logos are stored on disk (server/upload.ts) — without this volume they'd be
       # wiped every time the container is rebuilt/redeployed.

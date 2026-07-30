@@ -27,10 +27,6 @@ DATABASE_URL="postgresql://usuario:senha@host/dbname?sslmode=require"
 # forte e único por ambiente — nunca reaproveite entre dev e produção.
 JWT_SECRET="GERE_UM_VALOR_ALEATORIO_FORTE_AQUI"
 
-# ==============================================================================
-# INTEGRAÇÃO COM IA (opcional, se as funcionalidades de IA estiverem em uso)
-# ==============================================================================
-GEMINI_API_KEY="sua-chave-do-google-ai-studio"
 ```
 
 ---
@@ -50,9 +46,6 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 ### `APP_URL`
 Usada apenas como referência textual (não afeta lógica de CORS ou roteamento hoje). Mantenha alinhada com o domínio real em produção.
-
-### `GEMINI_API_KEY`
-Necessária apenas se/quando funcionalidades baseadas em IA generativa (Google Gemini) forem usadas no projeto.
 
 ---
 
