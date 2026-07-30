@@ -301,7 +301,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         </div>
 
         {/* View Switches & Create shortcut */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center flex-wrap gap-3">
           <div className="flex bg-slate-50 border border-slate-200 rounded-lg p-0.5">
             <button
               onClick={() => setViewType('day')}
@@ -325,7 +325,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1 px-3 py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:opacity-90 transition cursor-pointer"
+            className="flex items-center gap-1 px-3 py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:opacity-90 transition cursor-pointer whitespace-nowrap"
           >
             <Plus className="h-4 w-4" /> Novo Horário
           </button>
@@ -411,7 +411,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                 return (
                   <div
                     key={dayStr}
-                    className={`bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col min-h-[350px] ${isSelected ? 'border-brand-primary ring-1 ring-brand-primary' : 'border-slate-200'}`}
+                    className={`bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col min-h-[160px] md:min-h-[350px] ${isSelected ? 'border-brand-primary ring-1 ring-brand-primary' : 'border-slate-200'}`}
                   >
                     <div
                       onClick={() => setSelectedDate(dayStr)}
@@ -525,7 +525,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 1: Appointment Details Popup */}
       {showDetailModal && selectedApt && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
           <div className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-xl animate-fade-in">
             <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
               <div>
@@ -687,7 +687,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 2: Edit Appointment Dialog */}
       {showEditModal && selectedApt && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
           <form
             onSubmit={handleSaveEdit}
             className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
@@ -810,7 +810,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 3: Create New Appointment Dialog */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
           <form
             onSubmit={handleSaveCreate}
             className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"

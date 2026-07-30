@@ -290,15 +290,15 @@ export default function App() {
 
       {/* MOBILE HEADER RAIL */}
       <div className={`md:hidden bg-brand-primary text-white p-4 flex items-center justify-between z-40 ${!isOnline ? 'mt-8' : ''}`}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {company?.logoUrl ? (
-            <img src={company.logoUrl} alt="Logo" className="h-8 w-8 object-contain rounded" referrerPolicy="no-referrer" />
+            <img src={company.logoUrl} alt="Logo" className="h-8 w-8 object-contain rounded flex-shrink-0" referrerPolicy="no-referrer" />
           ) : (
-            <div className="h-8 w-8 rounded-lg bg-white p-1 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-white p-1 flex items-center justify-center flex-shrink-0">
               <img src="/logo-mark.png" alt="CM Studio" className="h-full w-full object-contain" />
             </div>
           )}
-          <span className="font-display font-black text-sm tracking-tight">
+          <span className="font-display font-black text-sm tracking-tight truncate">
             {user?.role === 'super_admin' ? 'Master Admin' : (company?.name || 'CM Studio')}
           </span>
         </div>
@@ -329,7 +329,7 @@ export default function App() {
 
       {/* BACKOFFICE SIDEBAR (Desktop & Mobile expanded) */}
       <aside
-        className={`bg-white text-slate-600 border-r border-slate-200 w-full md:w-64 min-h-screen flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 ${mobileMenuOpen ? 'absolute inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
+        className={`bg-white text-slate-600 border-r border-slate-200 w-full md:w-64 min-h-screen flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 overflow-y-auto ${mobileMenuOpen ? 'fixed inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
       >
         <div className="space-y-8 p-6">
           {/* Brand Logo Header */}

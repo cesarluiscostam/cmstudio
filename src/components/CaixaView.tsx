@@ -377,7 +377,7 @@ export default function CaixaView({
 
       {/* MODAL 1: Add Manual Transaction */}
       {showManualModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateTransaction}
             className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
@@ -502,7 +502,7 @@ export default function CaixaView({
 
       {/* MODAL 2: Register Product Sale */}
       {showSaleModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateSale}
             className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"

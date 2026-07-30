@@ -107,7 +107,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
       {children}
       {state && (
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/50 p-4"
+          className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4"
           onClick={() => handleClose(false)}
         >
           <div

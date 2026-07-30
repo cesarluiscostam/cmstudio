@@ -232,7 +232,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
       {/* MODAL 1: Add Service */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateService}
             className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
@@ -325,7 +325,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
       {/* MODAL 2: Edit Service */}
       {showEditModal && selectedSrv && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleUpdateService}
             className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"

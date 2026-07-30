@@ -251,7 +251,7 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
 
       {/* MODAL: Register Client Dialog */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateClient}
             className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"

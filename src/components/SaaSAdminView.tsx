@@ -509,7 +509,7 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
 
       {/* MODAL: Create / Edit Partner Business */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -733,7 +733,7 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
 
       {/* MODAL: Delete Partner Business Confirmation */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-55 overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center p-4 z-55 overflow-y-auto">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden flex flex-col p-6 space-y-6">
             <div className="space-y-2 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
