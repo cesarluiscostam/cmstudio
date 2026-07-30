@@ -1,0 +1,6 @@
+{
+  "name": "CM Studio",
+  "description": "SaaS completo para gestão de barbearias com controle de agenda, clientes, serviços, fluxo de caixa e agendamento online.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

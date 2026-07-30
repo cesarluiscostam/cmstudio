@@ -1,0 +1,48 @@
+version: '3.8'
+
+# CM Studio production stack: a single Node/Express container (serves the API
+# and the built React SPA) behind an Nginx TLS-terminating reverse proxy.
+# The database is NOT included here — it's a managed Postgres (e.g. Neon), configured
+# via the DATABASE_URL env var below.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cmstudio-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      # Uploaded logos are stored on disk (server/upload.ts) — without this volume they'd be
+      # wiped every time the container is rebuilt/redeployed.
+      - uploads-data:/app/uploads
+    networks:
+      - cmstudio-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: cmstudio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - cmstudio-network
+
+networks:
+  cmstudio-network:
+    driver: bridge
+
+volumes:
+  uploads-data:
+    driver: local

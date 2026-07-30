@@ -1,0 +1,685 @@
+{
+  "companies": [
+    {
+      "id": "comp-1",
+      "name": "BarberFlow Studio",
+      "slug": "barberflow",
+      "phone": "(11) 99999-1234",
+      "address": "Av. Paulista, 1000 - Bela Vista, São Paulo - SP",
+      "instagram": "@barberflow_studio",
+      "logoUrl": "",
+      "businessType": "barbershop",
+      "primaryColor": "#4f46e5",
+      "secondaryColor": "#312e81",
+      "subscriptionFee": 149.9,
+      "createdAt": "2026-07-30T12:18:38.535Z"
+    },
+    {
+      "id": "comp-2",
+      "name": "Navalha & Bigode",
+      "slug": "navalha-bigode",
+      "phone": "(11) 98888-4321",
+      "address": "Rua Augusta, 450 - Consolação, São Paulo - SP",
+      "instagram": "@navalhabigode",
+      "logoUrl": "",
+      "businessType": "barbershop",
+      "primaryColor": "#b45309",
+      "secondaryColor": "#78350f",
+      "subscriptionFee": 149.9,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "comp-3",
+      "name": "Studio Bella - Salão & Estética",
+      "slug": "studio-bella",
+      "phone": "(11) 97777-1111",
+      "address": "Av. Brigadeiro Luís Antônio, 2200 - Jardins, São Paulo - SP",
+      "instagram": "@studio_bella_estetica",
+      "logoUrl": "",
+      "businessType": "beauty_salon",
+      "primaryColor": "#db2777",
+      "secondaryColor": "#831843",
+      "subscriptionFee": 199.9,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "comp-4",
+      "name": "Unhas de Fibra & Manicure Express",
+      "slug": "unhas-de-fibra",
+      "phone": "(11) 96666-2222",
+      "address": "Rua Pamplona, 120 - Jardim Paulista, São Paulo - SP",
+      "instagram": "@unhas_fibra_express",
+      "logoUrl": "",
+      "businessType": "manicure",
+      "primaryColor": "#ec4899",
+      "secondaryColor": "#9d174d",
+      "subscriptionFee": 99.9,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "user-super-admin",
+      "companyId": "comp-saas",
+      "name": "Cesar Administrador",
+      "email": "admin@saas.com",
+      "phone": "(11) 98888-8888",
+      "role": "super_admin",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "user-admin",
+      "companyId": "comp-1",
+      "name": "Carlos Silva",
+      "email": "admin@barberflow.com",
+      "phone": "(11) 99999-1111",
+      "role": "manager",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "user-barber1",
+      "companyId": "comp-1",
+      "name": "Felipe Santos",
+      "email": "felipe@barberflow.com",
+      "phone": "(11) 99999-2222",
+      "role": "staff",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "user-navalha",
+      "companyId": "comp-2",
+      "name": "Pedro Navalha",
+      "email": "pedro@navalha.com",
+      "role": "manager",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "user-bella",
+      "companyId": "comp-3",
+      "name": "Isabella Rocha",
+      "email": "isabella@studiobella.com",
+      "phone": "(11) 97777-3333",
+      "role": "manager",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "user-manicure",
+      "companyId": "comp-4",
+      "name": "Juliana Unhas",
+      "email": "juliana@unhasfibra.com",
+      "phone": "(11) 96666-4444",
+      "role": "manager",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    }
+  ],
+  "clients": [
+    {
+      "id": "clt-1",
+      "companyId": "comp-1",
+      "name": "Guilherme Souza",
+      "phone": "(11) 91111-2222",
+      "birthDate": "1995-04-12",
+      "notes": "Gosta de corte degradê bem alto, finalizado com pomada mate.",
+      "totalSpent": 225,
+      "visitsCount": 5,
+      "lastVisitAt": "2026-07-10T14:00:00Z",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "clt-2",
+      "companyId": "comp-1",
+      "name": "Arthur Lima",
+      "phone": "(11) 92222-3333",
+      "birthDate": "1988-11-23",
+      "notes": "Alérgico a lâmina de barbear na região do pescoço, usar máquina zero.",
+      "totalSpent": 140,
+      "visitsCount": 2,
+      "lastVisitAt": "2026-07-08T10:30:00Z",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "clt-3",
+      "companyId": "comp-1",
+      "name": "Rafael Costa",
+      "phone": "(11) 93333-4444",
+      "birthDate": "2001-08-05",
+      "notes": "Sobrancelha bem marcada. Fazer risco no corte.",
+      "totalSpent": 60,
+      "visitsCount": 1,
+      "lastVisitAt": "2026-07-05T16:00:00Z",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "clt-4",
+      "companyId": "comp-1",
+      "name": "Lucas Mendes",
+      "phone": "(11) 94444-5555",
+      "birthDate": "1992-02-18",
+      "notes": "Apenas barba com toalha quente.",
+      "totalSpent": 105,
+      "visitsCount": 3,
+      "lastVisitAt": "2026-07-12T11:00:00Z",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "clt-5",
+      "companyId": "comp-1",
+      "name": "Gustavo Oliveira",
+      "phone": "(11) 95555-6666",
+      "birthDate": "1997-09-30",
+      "notes": "Usa cabelo longo, aparar apenas pontas.",
+      "totalSpent": 45,
+      "visitsCount": 1,
+      "lastVisitAt": "2026-07-01T15:30:00Z",
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    }
+  ],
+  "services": [
+    {
+      "id": "srv-1",
+      "companyId": "comp-1",
+      "name": "Corte Degradê",
+      "durationMin": 30,
+      "price": 45,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-2",
+      "companyId": "comp-1",
+      "name": "Barba Completa",
+      "durationMin": 30,
+      "price": 35,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-3",
+      "companyId": "comp-1",
+      "name": "Combo: Corte + Barba",
+      "durationMin": 60,
+      "price": 70,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-4",
+      "companyId": "comp-1",
+      "name": "Sobrancelha Navalhada",
+      "durationMin": 15,
+      "price": 15,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-5",
+      "companyId": "comp-1",
+      "name": "Selagem / Progressiva",
+      "durationMin": 90,
+      "price": 120,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-6",
+      "companyId": "comp-1",
+      "name": "Pigmentação Barba",
+      "durationMin": 30,
+      "price": 25,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-nav-1",
+      "companyId": "comp-2",
+      "name": "Corte Navalha",
+      "durationMin": 45,
+      "price": 50,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-bella-1",
+      "companyId": "comp-3",
+      "name": "Corte Feminino & Escova",
+      "durationMin": 45,
+      "price": 80,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-bella-2",
+      "companyId": "comp-3",
+      "name": "Luzes / Mechas Completas",
+      "durationMin": 120,
+      "price": 250,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-bella-3",
+      "companyId": "comp-3",
+      "name": "Pé & Mão Simples",
+      "durationMin": 45,
+      "price": 55,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-fib-1",
+      "companyId": "comp-4",
+      "name": "Alongamento de Unha em Fibra",
+      "durationMin": 90,
+      "price": 130,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-fib-2",
+      "companyId": "comp-4",
+      "name": "Manutenção Fibra de Vidro",
+      "durationMin": 60,
+      "price": 85,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "srv-fib-3",
+      "companyId": "comp-4",
+      "name": "Blindagem de Unhas",
+      "durationMin": 30,
+      "price": 50,
+      "active": true,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-today-1",
+      "companyId": "comp-1",
+      "clientId": "clt-1",
+      "clientName": "Guilherme Souza",
+      "clientPhone": "(11) 91111-2222",
+      "date": "2026-07-13",
+      "time": "09:30",
+      "serviceIds": [
+        "srv-1"
+      ],
+      "serviceNames": [
+        "Corte Degradê"
+      ],
+      "totalPrice": 45,
+      "totalDurationMin": 30,
+      "status": "confirmed",
+      "notes": "Quer fazer risco na sobrancelha hoje também",
+      "createdAt": "2026-07-12T18:00:00Z"
+    },
+    {
+      "id": "apt-today-2",
+      "companyId": "comp-1",
+      "clientId": "clt-2",
+      "clientName": "Arthur Lima",
+      "clientPhone": "(11) 92222-3333",
+      "date": "2026-07-13",
+      "time": "10:30",
+      "serviceIds": [
+        "srv-3",
+        "srv-4"
+      ],
+      "serviceNames": [
+        "Combo: Corte + Barba",
+        "Sobrancelha Navalhada"
+      ],
+      "totalPrice": 85,
+      "totalDurationMin": 75,
+      "status": "confirmed",
+      "notes": "",
+      "createdAt": "2026-07-11T12:00:00Z"
+    },
+    {
+      "id": "apt-today-3",
+      "companyId": "comp-1",
+      "clientId": "clt-4",
+      "clientName": "Lucas Mendes",
+      "clientPhone": "(11) 94444-5555",
+      "date": "2026-07-13",
+      "time": "14:00",
+      "serviceIds": [
+        "srv-2"
+      ],
+      "serviceNames": [
+        "Barba Completa"
+      ],
+      "totalPrice": 35,
+      "totalDurationMin": 30,
+      "status": "confirmed",
+      "notes": "Toalha quente extra se possível",
+      "createdAt": "2026-07-12T15:30:00Z"
+    },
+    {
+      "id": "apt-today-4",
+      "companyId": "comp-1",
+      "clientId": "clt-3",
+      "clientName": "Rafael Costa",
+      "clientPhone": "(11) 93333-4444",
+      "date": "2026-07-13",
+      "time": "16:00",
+      "serviceIds": [
+        "srv-1",
+        "srv-6"
+      ],
+      "serviceNames": [
+        "Corte Degradê",
+        "Pigmentação Barba"
+      ],
+      "totalPrice": 70,
+      "totalDurationMin": 60,
+      "status": "confirmed",
+      "createdAt": "2026-07-12T20:00:00Z"
+    },
+    {
+      "id": "apt-past-1",
+      "companyId": "comp-1",
+      "clientId": "clt-1",
+      "clientName": "Guilherme Souza",
+      "clientPhone": "(11) 91111-2222",
+      "date": "2026-07-10",
+      "time": "14:00",
+      "serviceIds": [
+        "srv-3"
+      ],
+      "serviceNames": [
+        "Combo: Corte + Barba"
+      ],
+      "totalPrice": 70,
+      "totalDurationMin": 60,
+      "status": "completed",
+      "createdAt": "2026-07-09T10:00:00Z"
+    },
+    {
+      "id": "apt-past-2",
+      "companyId": "comp-1",
+      "clientId": "clt-4",
+      "clientName": "Lucas Mendes",
+      "clientPhone": "(11) 94444-5555",
+      "date": "2026-07-12",
+      "time": "11:00",
+      "serviceIds": [
+        "srv-2"
+      ],
+      "serviceNames": [
+        "Barba Completa"
+      ],
+      "totalPrice": 35,
+      "totalDurationMin": 30,
+      "status": "completed",
+      "createdAt": "2026-07-11T16:00:00Z"
+    },
+    {
+      "id": "apt-past-3",
+      "companyId": "comp-1",
+      "clientId": "clt-2",
+      "clientName": "Arthur Lima",
+      "clientPhone": "(11) 92222-3333",
+      "date": "2026-07-08",
+      "time": "10:30",
+      "serviceIds": [
+        "srv-1",
+        "srv-4"
+      ],
+      "serviceNames": [
+        "Corte Degradê",
+        "Sobrancelha Navalhada"
+      ],
+      "totalPrice": 60,
+      "totalDurationMin": 45,
+      "status": "completed",
+      "createdAt": "2026-07-07T14:30:00Z"
+    },
+    {
+      "id": "apt-pend-1",
+      "companyId": "comp-1",
+      "clientId": "clt-5",
+      "clientName": "Gustavo Oliveira",
+      "clientPhone": "(11) 95555-6666",
+      "date": "2026-07-14",
+      "time": "11:00",
+      "serviceIds": [
+        "srv-1"
+      ],
+      "serviceNames": [
+        "Corte Degradê"
+      ],
+      "totalPrice": 45,
+      "totalDurationMin": 30,
+      "status": "pending",
+      "notes": "Solicitação online. Primeira vez no agendamento automático.",
+      "createdAt": "2026-07-13T04:20:00Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx-past-1",
+      "companyId": "comp-1",
+      "type": "income",
+      "amount": 70,
+      "description": "Atendimento: Guilherme Souza - Combo: Corte + Barba",
+      "category": "Atendimento",
+      "date": "2026-07-10",
+      "appointmentId": "apt-past-1",
+      "createdAt": "2026-07-10T15:00:00Z"
+    },
+    {
+      "id": "tx-past-2",
+      "companyId": "comp-1",
+      "type": "income",
+      "amount": 35,
+      "description": "Atendimento: Lucas Mendes - Barba Completa",
+      "category": "Atendimento",
+      "date": "2026-07-12",
+      "appointmentId": "apt-past-2",
+      "createdAt": "2026-07-12T11:30:00Z"
+    },
+    {
+      "id": "tx-past-3",
+      "companyId": "comp-1",
+      "type": "income",
+      "amount": 60,
+      "description": "Atendimento: Arthur Lima - Corte Degradê, Sobrancelha Navalhada",
+      "category": "Atendimento",
+      "date": "2026-07-08",
+      "appointmentId": "apt-past-3",
+      "createdAt": "2026-07-08T11:15:00Z"
+    },
+    {
+      "id": "tx-sale-1",
+      "companyId": "comp-1",
+      "type": "income",
+      "amount": 35,
+      "description": "Venda de Produto: Pomada Modeladora Mate",
+      "category": "Venda de Produto",
+      "date": "2026-07-12",
+      "createdAt": "2026-07-12T16:45:00Z"
+    },
+    {
+      "id": "tx-sale-2",
+      "companyId": "comp-1",
+      "type": "income",
+      "amount": 40,
+      "description": "Venda de Produto: Óleo para Barba Wood",
+      "category": "Venda de Produto",
+      "date": "2026-07-11",
+      "createdAt": "2026-07-11T18:30:00Z"
+    },
+    {
+      "id": "tx-exp-1",
+      "companyId": "comp-1",
+      "type": "expense",
+      "amount": 1200,
+      "description": "Aluguel do Salão Julho/2026",
+      "category": "Aluguel",
+      "date": "2026-07-05",
+      "createdAt": "2026-07-05T09:00:00Z"
+    },
+    {
+      "id": "tx-exp-2",
+      "companyId": "comp-1",
+      "type": "expense",
+      "amount": 280,
+      "description": "Conta de Energia Elétrica",
+      "category": "Energia",
+      "date": "2026-07-07",
+      "createdAt": "2026-07-07T14:00:00Z"
+    },
+    {
+      "id": "tx-exp-3",
+      "companyId": "comp-1",
+      "type": "expense",
+      "amount": 120,
+      "description": "Internet Fibra 400MB",
+      "category": "Internet",
+      "date": "2026-07-08",
+      "createdAt": "2026-07-08T10:00:00Z"
+    },
+    {
+      "id": "tx-exp-4",
+      "companyId": "comp-1",
+      "type": "expense",
+      "amount": 350,
+      "description": "Produtos de Limpeza e Café",
+      "category": "Outros",
+      "date": "2026-07-11",
+      "createdAt": "2026-07-11T15:00:00Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1",
+      "companyId": "comp-1",
+      "name": "Pomada Modeladora Mate (150g)",
+      "price": 35,
+      "stock": 12,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "prod-2",
+      "companyId": "comp-1",
+      "name": "Óleo para Barba Wood (30ml)",
+      "price": 40,
+      "stock": 8,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    },
+    {
+      "id": "prod-3",
+      "companyId": "comp-1",
+      "name": "Shampoo Mentolado Anticaspa",
+      "price": 45,
+      "stock": 5,
+      "createdAt": "2026-07-30T12:18:38.536Z"
+    }
+  ],
+  "sales": [
+    {
+      "id": "sale-1",
+      "companyId": "comp-1",
+      "productId": "prod-1",
+      "productName": "Pomada Modeladora Mate (150g)",
+      "quantity": 1,
+      "totalPrice": 35,
+      "date": "2026-07-12",
+      "createdAt": "2026-07-12T16:45:00Z"
+    },
+    {
+      "id": "sale-2",
+      "companyId": "comp-1",
+      "productId": "prod-2",
+      "productName": "Óleo para Barba Wood (30ml)",
+      "quantity": 1,
+      "totalPrice": 40,
+      "date": "2026-07-11",
+      "createdAt": "2026-07-11T18:30:00Z"
+    }
+  ],
+  "settings": [
+    {
+      "companyId": "comp-1",
+      "workDays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "openTime": "09:00",
+      "closeTime": "19:00",
+      "lunchStart": "12:00",
+      "lunchEnd": "13:00",
+      "slotIntervalMin": 30,
+      "allowOnlineBooking": true
+    },
+    {
+      "companyId": "comp-2",
+      "workDays": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        0
+      ],
+      "openTime": "10:00",
+      "closeTime": "21:00",
+      "lunchStart": "13:00",
+      "lunchEnd": "14:00",
+      "slotIntervalMin": 30,
+      "allowOnlineBooking": true
+    },
+    {
+      "companyId": "comp-3",
+      "workDays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "openTime": "08:00",
+      "closeTime": "20:00",
+      "lunchStart": "12:00",
+      "lunchEnd": "13:00",
+      "slotIntervalMin": 45,
+      "allowOnlineBooking": true
+    },
+    {
+      "companyId": "comp-4",
+      "workDays": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        0
+      ],
+      "openTime": "09:00",
+      "closeTime": "18:00",
+      "lunchStart": "12:00",
+      "lunchEnd": "13:00",
+      "slotIntervalMin": 30,
+      "allowOnlineBooking": true
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1",
+      "companyId": "comp-1",
+      "type": "pending_confirmation",
+      "title": "Novo agendamento online",
+      "message": "Gustavo Oliveira solicitou Corte Degradê para 14/07 às 11:00.",
+      "read": false,
+      "appointmentId": "apt-pend-1",
+      "createdAt": "2026-07-13T04:20:00Z"
+    }
+  ]
+}
