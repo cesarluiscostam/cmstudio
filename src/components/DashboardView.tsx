@@ -429,35 +429,6 @@ export default function DashboardView({
               </div>
             )}
           </div>
-
-          {/* SaaS Operations Status Card */}
-          <div className="bg-indigo-950 p-5 rounded-xl text-white shadow-sm">
-            <h3 className="text-xs font-bold tracking-widest uppercase text-indigo-300 mb-4">
-              STATUS DA ASSINATURA
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-indigo-200">Plano:</span>
-                <span className="font-semibold text-amber-400 flex items-center gap-1">Pro Mensal</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-indigo-200">Próxima fatura:</span>
-                <span className="font-semibold text-white">05/08/2026</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-indigo-200">Agendamentos Online:</span>
-                <span className="font-semibold text-emerald-400">Ativado (Ilimitado)</span>
-              </div>
-              <div className="pt-2 border-t border-indigo-800">
-                <button
-                  onClick={() => onNavigate('configuracoes')}
-                  className="w-full py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-lg text-[10px] font-bold text-center transition cursor-pointer"
-                >
-                  CONFIGURAR INTEGRADORES
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
