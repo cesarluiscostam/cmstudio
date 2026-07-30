@@ -277,6 +277,44 @@ export default function App() {
     '--color-brand-secondary': company?.secondaryColor || '#312e81',
   } as React.CSSProperties;
 
+  // Shared notification dropdown panel — rendered from both the mobile header rail and the
+  // desktop top bar bell buttons, since each only exists in one of the two layouts.
+  const notificationDropdown = showNotifications && (
+    <div className="absolute right-0 mt-2.5 w-80 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 space-y-3">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+        <span className="text-xs font-bold text-slate-900">Notificações Recentes</span>
+        {notificationsCount > 0 && (
+          <button
+            onClick={handleMarkNotificationsRead}
+            className="text-[10px] font-bold text-slate-500 hover:text-slate-950 underline cursor-pointer"
+          >
+            Limpar alertas
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2 max-h-[220px] overflow-y-auto">
+        {notifications.length === 0 ? (
+          <p className="text-xs text-slate-400 text-center py-6">Nenhum alerta recente.</p>
+        ) : (
+          notifications.map(n => (
+            <div
+              key={n.id}
+              className={`p-2.5 rounded-xl border text-xs text-slate-700 space-y-1 ${n.read ? 'bg-white border-slate-200' : 'bg-slate-50 border-slate-200 font-medium'}`}
+            >
+              <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
+                <span>ONLINE REQUEST</span>
+                <span>{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <p className="font-semibold text-slate-900 text-xs">{n.title}</p>
+              <p className="text-slate-500 text-[11px] leading-tight">{n.message}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div style={brandStyle} className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans text-slate-800">
       
@@ -305,17 +343,20 @@ export default function App() {
 
         <div className="flex items-center gap-3">
           {user?.role !== 'super_admin' && (
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg relative transition"
-            >
-              <Bell className="h-4 w-4" />
-              {notificationsCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {notificationsCount}
-                </span>
-              )}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg relative transition"
+              >
+                <Bell className="h-4 w-4" />
+                {notificationsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {notificationsCount}
+                  </span>
+                )}
+              </button>
+              {notificationDropdown}
+            </div>
           )}
           
           <button
@@ -440,43 +481,7 @@ export default function App() {
                     <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-indigo-600 rounded-full animate-pulse"></span>
                   )}
                 </button>
-
-                {/* Notification dropdown tray */}
-                {showNotifications && (
-                  <div className="absolute right-0 mt-2.5 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                      <span className="text-xs font-bold text-slate-900">Notificações Recentes</span>
-                      {notificationsCount > 0 && (
-                        <button
-                          onClick={handleMarkNotificationsRead}
-                          className="text-[10px] font-bold text-slate-500 hover:text-slate-950 underline cursor-pointer"
-                        >
-                          Limpar alertas
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="space-y-2 max-h-[220px] overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <p className="text-xs text-slate-400 text-center py-6">Nenhum alerta recente.</p>
-                      ) : (
-                        notifications.map(n => (
-                          <div
-                            key={n.id}
-                            className={`p-2.5 rounded-xl border text-xs text-slate-700 space-y-1 ${n.read ? 'bg-white border-slate-200' : 'bg-slate-50 border-slate-200 font-medium'}`}
-                          >
-                            <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
-                              <span>ONLINE REQUEST</span>
-                              <span>{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                            <p className="font-semibold text-slate-900 text-xs">{n.title}</p>
-                            <p className="text-slate-500 text-[11px] leading-tight">{n.message}</p>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
+                {notificationDropdown}
               </div>
             )}
 
