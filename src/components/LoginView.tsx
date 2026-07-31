@@ -88,23 +88,23 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
 
   if (forceChangeMode) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-paper flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
-            <div className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+            <div className="h-12 w-12 rounded-full bg-wine flex items-center justify-center text-white shadow-md">
               <ShieldAlert className="h-6 w-6" />
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-slate-900">
+          <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-ink">
             Primeiro Acesso
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-600">
+          <p className="mt-2 text-center text-sm text-ink-dim">
             Por questões de segurança, você precisa alterar sua senha temporária para ativar sua conta do salão/barbearia.
           </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow-sm border border-slate-100 rounded-2xl sm:px-10">
+          <div className="bg-card py-8 px-4 shadow-sm border border-ink/8 rounded-2xl sm:px-10">
             {error && (
               <div className="mb-4 rounded-xl bg-red-50 p-3.5 border border-red-100 text-sm text-red-700 flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -114,7 +114,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
 
             <form className="space-y-5" onSubmit={handleChangePasswordSubmit}>
               <div>
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block text-sm font-medium text-ink-dim">
                   Seu E-mail
                 </label>
                 <div className="mt-1">
@@ -122,13 +122,13 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                     type="email"
                     disabled
                     value={email}
-                    className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 text-sm font-mono cursor-not-allowed"
+                    className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl bg-paper text-ink-dim text-sm font-mono cursor-not-allowed"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="newPassword" className="block text-sm font-medium text-ink-dim">
                   Defina Nova Senha *
                 </label>
                 <div className="mt-1">
@@ -139,13 +139,13 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Mínimo de 4 caracteres"
-                    className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 text-sm"
+                    className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-ink-dim">
                   Confirme a Nova Senha *
                 </label>
                 <div className="mt-1">
@@ -156,7 +156,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repita a nova senha"
-                    className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 text-sm"
+                    className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary text-sm"
                   />
                 </div>
               </div>
@@ -165,7 +165,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 disabled:opacity-50 transition"
+                  className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:opacity-50 transition"
                 >
                   {loading ? 'Alterando senha...' : 'Definir Senha & Acessar Painel'}
                   {!loading && <ArrowRight className="h-4 w-4" />}
@@ -180,23 +180,23 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
 
   if (forgotMode) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-paper flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
             <img src="/logo-mark.png" alt="CM Studio" className="h-14 w-14 object-contain" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-slate-900">
+          <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-ink">
             Recuperar senha
           </h2>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow-sm border border-slate-100 rounded-2xl sm:px-10">
-            <div className="rounded-xl bg-indigo-50 p-4 border border-indigo-100 flex gap-3">
-              <Info className="h-5 w-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-indigo-900">
+          <div className="bg-card py-8 px-4 shadow-sm border border-ink/8 rounded-2xl sm:px-10">
+            <div className="rounded-xl bg-brass-soft p-4 border border-brass/20 flex gap-3">
+              <Info className="h-5 w-5 text-brass flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-ink">
                 <p className="font-medium">Ainda não temos redefinição automática por e-mail.</p>
-                <p className="mt-1 text-indigo-700">
+                <p className="mt-1 text-ink-dim">
                   Entre em contato com o administrador da sua barbearia ou com o suporte da plataforma
                   para receber uma senha temporária.
                 </p>
@@ -205,7 +205,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
             <button
               type="button"
               onClick={() => setForgotMode(false)}
-              className="mt-4 w-full flex justify-center py-2.5 px-4 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none"
+              className="mt-4 w-full flex justify-center py-2.5 px-4 border border-ink/10 rounded-xl shadow-sm text-sm font-medium text-ink-dim bg-card hover:bg-paper focus:outline-none"
             >
               Voltar para o login
             </button>
@@ -216,19 +216,19 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-paper flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <img src="/logo-mark.png" alt="CM Studio" className="h-14 w-14 object-contain" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-slate-900">
+        <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-ink">
           Entrar no CM Studio
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
+        <p className="mt-2 text-center text-sm text-ink-dim">
           Ou{' '}
           <button
             onClick={onNavigateToRegister}
-            className="font-medium text-slate-900 hover:underline cursor-pointer"
+            className="font-medium text-ink hover:underline cursor-pointer"
           >
             criar nova conta SaaS para sua barbearia
           </button>
@@ -236,7 +236,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm border border-slate-100 rounded-2xl sm:px-10">
+        <div className="bg-card py-8 px-4 shadow-sm border border-ink/8 rounded-2xl sm:px-10">
           {error && (
             <div className="mb-4 rounded-xl bg-red-50 p-3.5 border border-red-100 text-sm text-red-700 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -246,7 +246,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="email" className="block text-sm font-medium text-ink-dim">
                 E-mail
               </label>
               <div className="mt-1">
@@ -257,20 +257,20 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                  className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="password" className="block text-sm font-medium text-ink-dim">
                   Senha
                 </label>
                 <button
                   type="button"
                   onClick={() => setForgotMode(true)}
-                  className="text-xs font-medium text-slate-600 hover:underline"
+                  className="text-xs font-medium text-ink-dim hover:underline"
                 >
                   Esqueceu sua senha?
                 </button>
@@ -283,7 +283,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="appearance-none block w-full px-3 py-2.5 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                  className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
                 />
               </div>
             </div>
@@ -292,7 +292,7 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 disabled:opacity-50"
+                className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-ink hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ink disabled:opacity-50"
               >
                 {loading ? 'Entrando...' : 'Entrar na Barbearia'}
                 {!loading && <ArrowRight className="h-4 w-4" />}

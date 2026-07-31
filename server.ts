@@ -204,8 +204,8 @@ app.post('/api/auth/register', validateBody(schemas.register), ah(async (req, re
     slug,
     phone: phone || '',
     businessType: 'barbershop',
-    primaryColor: '#4f46e5',
-    secondaryColor: '#312e81',
+    primaryColor: '#ba8b3f',
+    secondaryColor: '#6f2f40',
     subscriptionFee: 149.90,
     createdAt: new Date().toISOString()
   });
@@ -732,8 +732,8 @@ app.post('/api/saas/companies', validateBody(schemas.createSaaSCompany), ah(asyn
     slug,
     phone: phone || '',
     businessType: businessType || 'barbershop',
-    primaryColor: primaryColor || '#4f46e5',
-    secondaryColor: secondaryColor || '#312e81',
+    primaryColor: primaryColor || '#ba8b3f',
+    secondaryColor: secondaryColor || '#6f2f40',
     subscriptionFee: subscriptionFee ? Number(subscriptionFee) : 149.90,
     createdAt: new Date().toISOString()
   });

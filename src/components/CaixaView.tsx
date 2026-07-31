@@ -255,52 +255,52 @@ export default function CaixaView({
       {/* Balances Bento Grid Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Entradas do Mês */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex justify-between text-slate-400 text-xs font-semibold tracking-wider">
+        <div className="bg-card p-5 rounded-xl border border-ink/10 shadow-sm">
+          <div className="flex justify-between text-ink-dim text-xs font-semibold tracking-wider">
             <span>ENTRADAS (MÊS)</span>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </div>
           <div className="mt-4">
             <span className="text-2xl font-extrabold text-emerald-600">R$ {totalIncomesMonth.toFixed(2)}</span>
-            <p className="text-[10px] text-slate-400 mt-1">Total acumulado em {currentMonthName}</p>
+            <p className="text-[10px] text-ink-dim mt-1">Total acumulado em {currentMonthName}</p>
           </div>
         </div>
 
         {/* Saídas do Mês */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex justify-between text-slate-400 text-xs font-semibold tracking-wider">
+        <div className="bg-card p-5 rounded-xl border border-ink/10 shadow-sm">
+          <div className="flex justify-between text-ink-dim text-xs font-semibold tracking-wider">
             <span>SAÍDAS (MÊS)</span>
             <TrendingDown className="h-4 w-4 text-red-500" />
           </div>
           <div className="mt-4">
             <span className="text-2xl font-extrabold text-red-600">R$ {totalExpensesMonth.toFixed(2)}</span>
-            <p className="text-[10px] text-slate-400 mt-1">Aluguel, contas e comissões</p>
+            <p className="text-[10px] text-ink-dim mt-1">Aluguel, contas e comissões</p>
           </div>
         </div>
 
         {/* Saldo Líquido do Mês */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex justify-between text-slate-400 text-xs font-semibold tracking-wider">
+        <div className="bg-card p-5 rounded-xl border border-ink/10 shadow-sm">
+          <div className="flex justify-between text-ink-dim text-xs font-semibold tracking-wider">
             <span>SALDO LÍQUIDO</span>
-            <DollarSign className="h-4 w-4 text-slate-400" />
+            <DollarSign className="h-4 w-4 text-ink-dim" />
           </div>
           <div className="mt-4">
-            <span className={`text-2xl font-extrabold ${netBalanceMonth >= 0 ? 'text-slate-900' : 'text-red-700'}`}>
+            <span className={`text-2xl font-extrabold ${netBalanceMonth >= 0 ? 'text-ink' : 'text-red-700'}`}>
               R$ {netBalanceMonth.toFixed(2)}
             </span>
-            <p className="text-[10px] text-slate-400 mt-1">Resultado de {currentMonthLabel}</p>
+            <p className="text-[10px] text-ink-dim mt-1">Resultado de {currentMonthLabel}</p>
           </div>
         </div>
 
         {/* Saldo de Hoje */}
-        <div className="bg-slate-900 p-5 rounded-xl text-white shadow-sm">
-          <div className="flex justify-between text-slate-400 text-xs font-semibold tracking-wider">
-            <span className="text-slate-300">SALDO DO DIA</span>
+        <div className="bg-rail p-5 rounded-[18px_6px_18px_6px] text-paper shadow-sm">
+          <div className="flex justify-between text-paper/50 text-xs font-semibold tracking-wider">
+            <span className="text-paper/60">SALDO DO DIA</span>
             <Clock className="h-4 w-4 text-amber-400" />
           </div>
           <div className="mt-4">
             <span className="text-2xl font-extrabold">R$ {netBalanceToday.toFixed(2)}</span>
-            <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+            <div className="flex justify-between text-[10px] text-paper/50 mt-1">
               <span>Incomes: +R${totalIncomesToday}</span>
               <span>Expenses: -R${totalExpensesToday}</span>
             </div>
@@ -309,26 +309,26 @@ export default function CaixaView({
       </div>
 
       {/* Toolbar / Actions Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-4 rounded-xl border border-ink/10 shadow-sm">
         {/* Filters */}
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-slate-400 hidden sm:inline" />
-          <div className="flex bg-slate-50 border border-slate-200 rounded-lg p-0.5">
+          <Filter className="h-4 w-4 text-ink-dim hidden sm:inline" />
+          <div className="flex bg-paper border border-ink/10 rounded-lg p-0.5">
             <button
               onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'all' ? 'bg-card text-ink shadow-xs' : 'text-ink-dim hover:text-ink'}`}
             >
               Todos
             </button>
             <button
               onClick={() => setFilterType('income')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'income' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-500 hover:text-emerald-700'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'income' ? 'bg-card text-emerald-700 shadow-xs' : 'text-ink-dim hover:text-emerald-700'}`}
             >
               Receitas (+)
             </button>
             <button
               onClick={() => setFilterType('expense')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'expense' ? 'bg-white text-red-700 shadow-xs' : 'text-slate-500 hover:text-red-700'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${filterType === 'expense' ? 'bg-card text-red-700 shadow-xs' : 'text-ink-dim hover:text-red-700'}`}
             >
               Despesas (-)
             </button>
@@ -339,15 +339,15 @@ export default function CaixaView({
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowProductsModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 bg-card border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition cursor-pointer"
           >
-            <Package className="h-3.5 w-3.5 text-slate-400" /> Gerenciar Produtos
+            <Package className="h-3.5 w-3.5 text-ink-dim" /> Gerenciar Produtos
           </button>
           <button
             onClick={() => setShowSaleModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 bg-card border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition cursor-pointer"
           >
-            <ShoppingBag className="h-3.5 w-3.5 text-slate-400" /> Registrar Venda
+            <ShoppingBag className="h-3.5 w-3.5 text-ink-dim" /> Registrar Venda
           </button>
           <button
             onClick={() => {
@@ -365,10 +365,10 @@ export default function CaixaView({
       </div>
 
       {/* Transaction List */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
+      <div className="bg-card rounded-xl border border-ink/10 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-ink/10 bg-paper flex items-center justify-between text-xs text-ink-dim font-bold uppercase tracking-wider">
           <span>EXTRATO DE FLUXO DE CAIXA</span>
-          <span className="text-slate-600">{filteredTransactions.length} lançamentos</span>
+          <span className="text-ink-dim">{filteredTransactions.length} lançamentos</span>
         </div>
 
         {loading ? (
@@ -376,13 +376,13 @@ export default function CaixaView({
             <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : filteredTransactions.length === 0 ? (
-          <div className="py-20 text-center text-slate-400 text-sm">
+          <div className="py-20 text-center text-ink-dim text-sm">
             Nenhuma transação correspondente encontrada.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50 text-xs text-slate-500 font-semibold uppercase">
+            <table className="min-w-full divide-y divide-ink/10 text-sm">
+              <thead className="bg-paper text-xs text-ink-dim font-semibold uppercase">
                 <tr>
                   <th className="px-6 py-3 text-left">Data</th>
                   <th className="px-6 py-3 text-left">Descrição</th>
@@ -391,9 +391,9 @@ export default function CaixaView({
                   <th className="px-6 py-3 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 text-slate-700 font-medium">
+              <tbody className="divide-y divide-ink/10 text-ink-dim font-medium">
                 {filteredTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-50 transition">
+                  <tr key={tx.id} className="hover:bg-paper transition">
                     <td className="px-6 py-4 whitespace-nowrap text-xs">
                       {tx.date.split('-').reverse().join('/')}
                     </td>
@@ -408,11 +408,11 @@ export default function CaixaView({
                             -
                           </div>
                         )}
-                        <span className="text-slate-900 text-sm font-semibold">{tx.description}</span>
+                        <span className="text-ink text-sm font-semibold">{tx.description}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
-                      <span className="px-2 py-1 bg-slate-100 rounded text-slate-600 font-bold uppercase tracking-wider text-[9px]">
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink-dim">
+                      <span className="px-2 py-1 bg-paper-dim rounded text-ink-dim font-bold uppercase tracking-wider text-[9px]">
                         {tx.category}
                       </span>
                     </td>
@@ -423,11 +423,11 @@ export default function CaixaView({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       {tx.appointmentId ? (
-                        <span className="text-[10px] text-slate-400 italic font-bold">Auto-atendimento</span>
+                        <span className="text-[10px] text-ink-dim italic font-bold">Auto-atendimento</span>
                       ) : (
                         <button
                           onClick={() => handleDeleteTransaction(tx.id)}
-                          className="text-slate-400 hover:text-red-600 transition cursor-pointer"
+                          className="text-ink-dim hover:text-red-600 transition cursor-pointer"
                           title="Remover Registro"
                         >
                           <Trash2 className="h-4 w-4 inline" />
@@ -447,14 +447,14 @@ export default function CaixaView({
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateTransaction}
-            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Registrar Entrada/Saída</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Registrar Entrada/Saída</h3>
               <button
                 type="button"
                 onClick={() => setShowManualModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -463,19 +463,19 @@ export default function CaixaView({
             <div className="p-6 space-y-4">
               {/* Type toggle */}
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1.5">TIPO DE OPERAÇÃO</label>
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1 rounded-lg border border-slate-200">
+                <label className="block text-xs font-bold text-ink-dim mb-1.5">TIPO DE OPERAÇÃO</label>
+                <div className="grid grid-cols-2 gap-2 bg-paper p-1 rounded-lg border border-ink/10">
                   <button
                     type="button"
                     onClick={() => setType('income')}
-                    className={`py-2 text-xs font-bold rounded-md transition cursor-pointer ${type === 'income' ? 'bg-white text-emerald-700 shadow-2xs' : 'text-slate-400'}`}
+                    className={`py-2 text-xs font-bold rounded-md transition cursor-pointer ${type === 'income' ? 'bg-card text-emerald-700 shadow-2xs' : 'text-ink-dim'}`}
                   >
                     Entrada (+)
                   </button>
                   <button
                     type="button"
                     onClick={() => setType('expense')}
-                    className={`py-2 text-xs font-bold rounded-md transition cursor-pointer ${type === 'expense' ? 'bg-white text-red-700 shadow-2xs' : 'text-slate-400'}`}
+                    className={`py-2 text-xs font-bold rounded-md transition cursor-pointer ${type === 'expense' ? 'bg-card text-red-700 shadow-2xs' : 'text-ink-dim'}`}
                   >
                     Saída (-)
                   </button>
@@ -484,7 +484,7 @@ export default function CaixaView({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">VALOR (R$)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">VALOR (R$)</label>
                   <input
                     type="number"
                     required
@@ -493,27 +493,27 @@ export default function CaixaView({
                     placeholder="0.00"
                     value={amount || ''}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">DATA</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">DATA</label>
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">CATEGORIA</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">CATEGORIA</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                 >
                   {type === 'income' ? (
                     <>
@@ -536,23 +536,23 @@ export default function CaixaView({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">DESCRIÇÃO DA TRANSAÇÃO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">DESCRIÇÃO DA TRANSAÇÃO</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Compra de lâminas e capas descartáveis"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowManualModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper-dim transition"
               >
                 Cancelar
               </button>
@@ -572,14 +572,14 @@ export default function CaixaView({
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateSale}
-            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Registrar Venda de Produto</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Registrar Venda de Produto</h3>
               <button
                 type="button"
                 onClick={() => setShowSaleModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -602,12 +602,12 @@ export default function CaixaView({
                 </div>
               ) : (
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">PRODUTO</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">PRODUTO</label>
                   <select
                     required
                     value={selectedProduct}
                     onChange={(e) => setSelectedProduct(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                   >
                     <option value="">-- Selecione o Produto --</option>
                     {products.map(p => (
@@ -623,34 +623,34 @@ export default function CaixaView({
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1">QUANTIDADE</label>
+                      <label className="block text-xs font-bold text-ink-dim mb-1">QUANTIDADE</label>
                       <input
                         type="number"
                         required
                         min={1}
                         value={quantity}
                         onChange={(e) => setQuantity(Number(e.target.value))}
-                        className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                        className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1">DATA DA VENDA</label>
+                      <label className="block text-xs font-bold text-ink-dim mb-1">DATA DA VENDA</label>
                       <input
                         type="date"
                         required
                         value={saleDate}
                         onChange={(e) => setSaleDate(e.target.value)}
-                        className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                        className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       />
                     </div>
                   </div>
 
                   {/* Instant calculation summary */}
                   {selectedProduct && (
-                    <div className="rounded-lg bg-slate-50 border border-slate-200 p-4 flex items-center justify-between text-sm animate-fade-in">
+                    <div className="rounded-lg bg-paper border border-ink/10 p-4 flex items-center justify-between text-sm animate-fade-in">
                       <div className="flex items-center gap-2">
-                        <Info className="h-4 w-4 text-slate-400" />
-                        <span className="text-slate-500">Valor Total da Venda:</span>
+                        <Info className="h-4 w-4 text-ink-dim" />
+                        <span className="text-ink-dim">Valor Total da Venda:</span>
                       </div>
                       <span className="font-extrabold text-brand-primary text-base">
                         R$ {((products.find(p => p.id === selectedProduct)?.price || 0) * quantity).toFixed(2)}
@@ -661,11 +661,11 @@ export default function CaixaView({
               )}
             </div>
 
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowSaleModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper-dim transition"
               >
                 Cancelar
               </button>
@@ -685,13 +685,13 @@ export default function CaixaView({
       {/* MODAL 3: Manage Products (list) */}
       {showProductsModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl">
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Gerenciar Produtos</h3>
+          <div className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl">
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Gerenciar Produtos</h3>
               <button
                 type="button"
                 onClick={() => setShowProductsModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -707,26 +707,26 @@ export default function CaixaView({
               </button>
 
               {products.length === 0 ? (
-                <p className="text-center text-sm text-slate-400 py-8">Nenhum produto cadastrado ainda.</p>
+                <p className="text-center text-sm text-ink-dim py-8">Nenhum produto cadastrado ainda.</p>
               ) : (
-                <div className="divide-y divide-slate-100 max-h-[340px] overflow-y-auto">
+                <div className="divide-y divide-ink/8 max-h-[340px] overflow-y-auto">
                   {products.map((p) => (
                     <div key={p.id} className="py-3 flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-bold text-slate-900">{p.name}</p>
-                        <p className="text-xs text-slate-500">R$ {p.price.toFixed(2)} • Estoque: {p.stock} un</p>
+                        <p className="text-sm font-bold text-ink">{p.name}</p>
+                        <p className="text-xs text-ink-dim">R$ {p.price.toFixed(2)} • Estoque: {p.stock} un</p>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button
                           onClick={() => handleOpenEditProduct(p)}
-                          className="p-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-brand-primary transition cursor-pointer"
+                          className="p-2 bg-card border border-ink/10 text-ink-dim rounded-lg hover:bg-paper hover:text-brand-primary transition cursor-pointer"
                           title="Editar Produto"
                         >
                           <Edit2 className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(p.id)}
-                          className="p-2 bg-white border border-slate-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 transition cursor-pointer"
+                          className="p-2 bg-card border border-ink/10 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 transition cursor-pointer"
                           title="Excluir Produto"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -746,14 +746,14 @@ export default function CaixaView({
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-[60] animate-fade-in">
           <form
             onSubmit={handleSaveProduct}
-            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h3>
               <button
                 type="button"
                 onClick={() => setShowProductFormModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -761,20 +761,20 @@ export default function CaixaView({
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO PRODUTO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">NOME DO PRODUTO</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Pomada Modeladora"
                   value={prodName}
                   onChange={(e) => setProdName(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">PREÇO (R$)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">PREÇO (R$)</label>
                   <input
                     type="number"
                     required
@@ -782,28 +782,28 @@ export default function CaixaView({
                     step={0.01}
                     value={prodPrice || ''}
                     onChange={(e) => setProdPrice(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">ESTOQUE (UN)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">ESTOQUE (UN)</label>
                   <input
                     type="number"
                     required
                     min={0}
                     value={prodStock || ''}
                     onChange={(e) => setProdStock(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowProductFormModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper-dim transition"
               >
                 Cancelar
               </button>

@@ -139,8 +139,8 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
       {/* Header and Quick stats */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Catálogo de Serviços</h2>
-          <p className="text-sm text-slate-500">Defina os tempos e valores de cada procedimento.</p>
+          <h2 className="text-lg font-bold text-ink">Catálogo de Serviços</h2>
+          <p className="text-sm text-ink-dim">Defina os tempos e valores de cada procedimento.</p>
         </div>
 
         <button
@@ -160,7 +160,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
           {services.map((srv) => (
             <div
               key={srv.id}
-              className={`bg-white rounded-xl border p-5 flex flex-col justify-between space-y-4 shadow-sm transition ${srv.active ? 'border-slate-200 hover:border-brand-primary/30' : 'border-slate-200/60 bg-slate-50/50 opacity-75'}`}
+              className={`bg-card rounded-xl border p-5 flex flex-col justify-between space-y-4 shadow-sm transition ${srv.active ? 'border-ink/10 hover:border-brand-primary/30' : 'border-ink/10/60 bg-paper-dim/50 opacity-75'}`}
             >
               {/* Header and Active indicator */}
               <div className="flex items-start justify-between">
@@ -169,34 +169,34 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     <Scissors className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">{srv.name}</h3>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">PRESTAÇÃO DIRETA</span>
+                    <h3 className="font-bold text-ink text-sm">{srv.name}</h3>
+                    <span className="text-[10px] text-ink-dim font-bold uppercase">PRESTAÇÃO DIRETA</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => handleToggleActive(srv)}
-                  className="text-slate-400 hover:text-brand-primary transition cursor-pointer"
+                  className="text-ink-dim hover:text-brand-primary transition cursor-pointer"
                   title={srv.active ? 'Desativar Serviço' : 'Ativar Serviço'}
                 >
                   {srv.active ? (
                     <ToggleRight className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <ToggleLeft className="h-6 w-6 text-slate-300" />
+                    <ToggleLeft className="h-6 w-6 text-ink-dim/50" />
                   )}
                 </button>
               </div>
 
               {/* Specifics bento values */}
-              <div className="grid grid-cols-2 gap-2 bg-slate-50/70 p-3 rounded-lg border border-slate-200 text-xs">
+              <div className="grid grid-cols-2 gap-2 bg-paper-dim/70 p-3 rounded-lg border border-ink/10 text-xs">
                 <div>
-                  <span className="text-slate-400 font-semibold block">DURAÇÃO</span>
-                  <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
-                    <Clock className="h-3.5 w-3.5 text-slate-400" /> {srv.durationMin} minutos
+                  <span className="text-ink-dim font-semibold block">DURAÇÃO</span>
+                  <span className="font-bold text-ink flex items-center gap-1 mt-0.5">
+                    <Clock className="h-3.5 w-3.5 text-ink-dim" /> {srv.durationMin} minutos
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 font-semibold block">VALOR</span>
+                  <span className="text-ink-dim font-semibold block">VALOR</span>
                   <span className="font-extrabold text-brand-primary text-sm flex items-center gap-0.5 mt-0.5">
                     R$ {srv.price.toFixed(2)}
                   </span>
@@ -204,21 +204,21 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-                <span className="text-[10px] font-bold text-slate-400">
+              <div className="flex items-center justify-between pt-2 border-t border-ink/10">
+                <span className="text-[10px] font-bold text-ink-dim">
                   {srv.active ? '● Ativo para agendamentos' : '○ Suspenso do catálogo'}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleOpenEdit(srv)}
-                    className="p-1.5 bg-slate-50 border border-slate-200 hover:border-brand-primary hover:text-brand-primary rounded-lg transition cursor-pointer"
+                    className="p-1.5 bg-paper border border-ink/10 hover:border-brand-primary hover:text-brand-primary rounded-lg transition cursor-pointer"
                     title="Editar Serviço"
                   >
                     <Edit className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => handleDeleteService(srv.id)}
-                    className="p-1.5 bg-slate-50 border border-slate-200 hover:border-red-500 hover:text-red-600 rounded-lg transition cursor-pointer"
+                    className="p-1.5 bg-paper border border-ink/10 hover:border-red-500 hover:text-red-600 rounded-lg transition cursor-pointer"
                     title="Excluir Serviço"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -235,14 +235,14 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleCreateService}
-            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Novo Serviço</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Novo Serviço</h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -250,20 +250,20 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO SERVIÇO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">NOME DO SERVIÇO</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Sobrancelha Navalhada"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">DURAÇÃO (MINUTOS)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">DURAÇÃO (MINUTOS)</label>
                   <input
                     type="number"
                     required
@@ -271,11 +271,11 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     step={5}
                     value={durationMin}
                     onChange={(e) => setDurationMin(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">PREÇO (R$)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">PREÇO (R$)</label>
                   <input
                     type="number"
                     required
@@ -283,32 +283,32 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     step={1}
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
               </div>
 
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm font-semibold text-slate-700">Disponível para agendamento online</span>
+                <span className="text-sm font-semibold text-ink-dim">Disponível para agendamento online</span>
                 <button
                   type="button"
                   onClick={() => setActive(!active)}
-                  className="text-slate-400 hover:text-brand-primary transition cursor-pointer"
+                  className="text-ink-dim hover:text-brand-primary transition cursor-pointer"
                 >
                   {active ? (
                     <ToggleRight className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <ToggleLeft className="h-6 w-6 text-slate-300" />
+                    <ToggleLeft className="h-6 w-6 text-ink-dim/50" />
                   )}
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper-dim transition"
               >
                 Cancelar
               </button>
@@ -328,14 +328,14 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
           <form
             onSubmit={handleUpdateService}
-            className="bg-white rounded-xl border border-slate-200 max-w-md w-full overflow-hidden shadow-2xl"
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Editar Serviço</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Editar Serviço</h3>
               <button
                 type="button"
                 onClick={() => setShowEditModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -343,19 +343,19 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO SERVIÇO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">NOME DO SERVIÇO</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">DURAÇÃO (MINUTOS)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">DURAÇÃO (MINUTOS)</label>
                   <input
                     type="number"
                     required
@@ -363,11 +363,11 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     step={5}
                     value={durationMin}
                     onChange={(e) => setDurationMin(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">PREÇO (R$)</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">PREÇO (R$)</label>
                   <input
                     type="number"
                     required
@@ -375,32 +375,32 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     step={1}
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
               </div>
 
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm font-semibold text-slate-700">Disponível para agendamento online</span>
+                <span className="text-sm font-semibold text-ink-dim">Disponível para agendamento online</span>
                 <button
                   type="button"
                   onClick={() => setActive(!active)}
-                  className="text-slate-400 hover:text-brand-primary transition cursor-pointer"
+                  className="text-ink-dim hover:text-brand-primary transition cursor-pointer"
                 >
                   {active ? (
                     <ToggleRight className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <ToggleLeft className="h-6 w-6 text-slate-300" />
+                    <ToggleLeft className="h-6 w-6 text-ink-dim/50" />
                   )}
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper-dim transition"
               >
                 Cancelar
               </button>

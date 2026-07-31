@@ -106,7 +106,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
       case 'pending':
         return <span className="px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold rounded-full flex items-center gap-1 animate-soft-pulse">● Aguardando aprovação</span>;
       case 'completed':
-        return <span className="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-semibold rounded-full flex items-center gap-1">Concluído</span>;
+        return <span className="px-2.5 py-0.5 bg-wine-soft text-wine border border-wine/20 text-xs font-semibold rounded-full flex items-center gap-1">Concluído</span>;
       case 'cancelled':
         return <span className="px-2.5 py-0.5 bg-red-50 text-red-700 border border-red-200 text-xs font-semibold rounded-full flex items-center gap-1">Cancelado</span>;
     }
@@ -116,8 +116,8 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
     switch (status) {
       case 'confirmed': return 'bg-emerald-50/40 hover:bg-emerald-50 border-l-4 border-emerald-500 text-emerald-950';
       case 'pending': return 'bg-amber-50/40 hover:bg-amber-50 border-l-4 border-amber-500 text-amber-950';
-      case 'completed': return 'bg-indigo-50/40 hover:bg-indigo-50 border-l-4 border-indigo-500 text-indigo-950';
-      case 'cancelled': return 'bg-slate-100 hover:bg-slate-150 border-l-4 border-slate-400 text-slate-500 line-through';
+      case 'completed': return 'bg-wine-soft/40 hover:bg-wine-soft border-l-4 border-wine text-wine';
+      case 'cancelled': return 'bg-paper-dim hover:bg-paper-dim border-l-4 border-ink/20 text-ink-dim line-through';
     }
   };
 
@@ -268,21 +268,21 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
   return (
     <div className="space-y-6">
       {/* Calendar Navigation Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-card p-4 rounded-xl border border-ink/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
+          <div className="flex items-center bg-paper border border-ink/10 rounded-lg p-1">
             <button
               onClick={handlePrevDay}
-              className="p-1.5 hover:bg-white hover:shadow-xs rounded-md transition cursor-pointer text-slate-700"
+              className="p-1.5 hover:bg-card hover:shadow-xs rounded-md transition cursor-pointer text-ink-dim"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="text-xs font-semibold px-2.5 text-slate-800">
+            <span className="text-xs font-semibold px-2.5 text-ink">
               {new Date(`${selectedDate}T00:00:00`).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
             </span>
             <button
               onClick={handleNextDay}
-              className="p-1.5 hover:bg-white hover:shadow-xs rounded-md transition cursor-pointer text-slate-700"
+              className="p-1.5 hover:bg-card hover:shadow-xs rounded-md transition cursor-pointer text-ink-dim"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -290,34 +290,34 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
           <button
             onClick={handleSetToday}
-            className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition cursor-pointer"
+            className="px-3 py-1.5 bg-card border border-ink/10 text-ink-dim text-xs font-semibold rounded-lg hover:bg-paper transition cursor-pointer"
           >
             Hoje
           </button>
 
-          <span className="text-sm font-semibold text-slate-700 hidden md:inline ml-2">
+          <span className="text-sm font-semibold text-ink-dim hidden md:inline ml-2">
             {new Date(`${selectedDate}T00:00:00`).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </span>
         </div>
 
         {/* View Switches & Create shortcut */}
         <div className="flex items-center flex-wrap gap-3">
-          <div className="flex bg-slate-50 border border-slate-200 rounded-lg p-0.5">
+          <div className="flex bg-paper border border-ink/10 rounded-lg p-0.5">
             <button
               onClick={() => setViewType('day')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'day' ? 'bg-white text-brand-primary font-semibold shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'day' ? 'bg-card text-brand-primary font-semibold shadow-xs' : 'text-ink-dim hover:text-ink'}`}
             >
               Dia
             </button>
             <button
               onClick={() => setViewType('week')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'week' ? 'bg-white text-brand-primary font-semibold shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'week' ? 'bg-card text-brand-primary font-semibold shadow-xs' : 'text-ink-dim hover:text-ink'}`}
             >
               Semana
             </button>
             <button
               onClick={() => setViewType('list')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'list' ? 'bg-white text-brand-primary font-semibold shadow-xs' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition cursor-pointer ${viewType === 'list' ? 'bg-card text-brand-primary font-semibold shadow-xs' : 'text-ink-dim hover:text-ink'}`}
             >
               Lista completa
             </button>
@@ -340,14 +340,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         <>
           {/* Day View */}
           {viewType === 'day' && (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-                <span className="text-xs font-bold text-slate-400 tracking-wider">CRONOGRAMA DO DIA</span>
-                <span className="text-xs font-bold text-slate-600">{dayAppointments.length} agendamentos registrados</span>
+            <div className="bg-card rounded-xl border border-ink/10 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-ink/10 flex items-center justify-between bg-paper-dim/50">
+                <span className="text-xs font-bold text-ink-dim tracking-wider">CRONOGRAMA DO DIA</span>
+                <span className="text-xs font-bold text-ink-dim">{dayAppointments.length} agendamentos registrados</span>
               </div>
 
               {dayAppointments.length === 0 ? (
-                <div className="py-24 text-center text-slate-400 text-sm space-y-3">
+                <div className="py-24 text-center text-ink-dim text-sm space-y-3">
                   <CalendarIcon className="h-8 w-8 mx-auto stroke-1" />
                   <p>Sua agenda está vazia para este dia.</p>
                   <button
@@ -358,7 +358,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   </button>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-200">
+                <div className="divide-y divide-ink/10">
                   {dayAppointments
                     .sort((a, b) => a.time.localeCompare(b.time))
                     .map((apt) => (
@@ -368,16 +368,16 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                         className={`p-4 flex items-center justify-between gap-4 cursor-pointer transition ${getStatusColorClass(apt.status)}`}
                       >
                         <div className="flex items-start gap-4">
-                          <div className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs font-mono flex-shrink-0">
+                          <div className="h-10 w-10 rounded-full bg-paper-dim text-ink-dim flex items-center justify-center font-bold text-xs font-mono flex-shrink-0">
                             {apt.time}
                           </div>
                           <div className="space-y-1">
-                            <h4 className="font-bold text-slate-900 text-sm">{apt.clientName}</h4>
-                            <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-slate-600">
+                            <h4 className="font-bold text-ink text-sm">{apt.clientName}</h4>
+                            <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-ink-dim">
                               <span className="flex items-center gap-1 font-medium">
-                                <Clock className="h-3.5 w-3.5 text-slate-400" /> {apt.totalDurationMin} min
+                                <Clock className="h-3.5 w-3.5 text-ink-dim" /> {apt.totalDurationMin} min
                               </span>
-                              <span className="font-semibold text-slate-700">
+                              <span className="font-semibold text-ink-dim">
                                 {apt.serviceNames.join(', ')}
                               </span>
                             </div>
@@ -386,8 +386,8 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
                         <div className="flex items-center gap-4">
                           <div className="text-right hidden sm:block">
-                            <p className="text-sm font-bold text-slate-900">R$ {apt.totalPrice.toFixed(2)}</p>
-                            <p className="text-[10px] text-slate-400">À cobrar</p>
+                            <p className="text-sm font-bold text-ink">R$ {apt.totalPrice.toFixed(2)}</p>
+                            <p className="text-[10px] text-ink-dim">À cobrar</p>
                           </div>
                           <div>
                             {getStatusBadge(apt.status)}
@@ -411,13 +411,13 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                 return (
                   <div
                     key={dayStr}
-                    className={`bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col min-h-[160px] md:min-h-[350px] ${isSelected ? 'border-brand-primary ring-1 ring-brand-primary' : 'border-slate-200'}`}
+                    className={`bg-card rounded-xl border shadow-sm overflow-hidden flex flex-col min-h-[160px] md:min-h-[350px] ${isSelected ? 'border-brand-primary ring-1 ring-brand-primary' : 'border-ink/10'}`}
                   >
                     <div
                       onClick={() => setSelectedDate(dayStr)}
-                      className={`p-3 text-center border-b border-slate-200 cursor-pointer transition ${isSelected ? 'bg-brand-primary text-white' : 'bg-slate-50/50 hover:bg-slate-100'}`}
+                      className={`p-3 text-center border-b border-ink/10 cursor-pointer transition ${isSelected ? 'bg-brand-primary text-white' : 'bg-paper-dim/50 hover:bg-paper-dim'}`}
                     >
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-white/70' : 'text-slate-400 opacity-60'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-white/70' : 'text-ink-dim opacity-60'}`}>
                         {dateObj.toLocaleDateString('pt-BR', { weekday: 'short' })}
                       </p>
                       <p className="text-lg font-display font-extrabold">
@@ -428,7 +428,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                     <div className="p-2 flex-1 space-y-2 overflow-y-auto">
                       {dayApts.length === 0 ? (
                         <div className="h-full flex items-center justify-center py-10 text-center">
-                          <p className="text-[10px] text-slate-400 font-semibold">Sem compromissos</p>
+                          <p className="text-[10px] text-ink-dim font-semibold">Sem compromissos</p>
                         </div>
                       ) : (
                         dayApts
@@ -439,12 +439,12 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                               onClick={() => handleOpenDetail(apt)}
                               className={`p-2.5 rounded-lg border text-xs cursor-pointer transition ${getStatusColorClass(apt.status)}`}
                             >
-                              <div className="flex items-center justify-between font-bold text-slate-900 mb-1">
+                              <div className="flex items-center justify-between font-bold text-ink mb-1">
                                 <span>{apt.time}</span>
                                 <span>R${apt.totalPrice.toFixed(0)}</span>
                               </div>
-                              <p className="font-semibold text-slate-900 truncate">{apt.clientName}</p>
-                              <p className="text-[10px] text-slate-500 truncate">{apt.serviceNames.join(', ')}</p>
+                              <p className="font-semibold text-ink truncate">{apt.clientName}</p>
+                              <p className="text-[10px] text-ink-dim truncate">{apt.serviceNames.join(', ')}</p>
                             </div>
                           ))
                       )}
@@ -457,20 +457,20 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
           {/* Complete List View */}
           {viewType === 'list' && (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600">HISTÓRICO GERAL DE AGENDAMENTOS</span>
-                <span className="text-xs text-slate-400 font-medium">{appointments.length} itens no total</span>
+            <div className="bg-card rounded-xl border border-ink/10 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
+                <span className="text-xs font-bold text-ink-dim">HISTÓRICO GERAL DE AGENDAMENTOS</span>
+                <span className="text-xs text-ink-dim font-medium">{appointments.length} itens no total</span>
               </div>
 
               {appointments.length === 0 ? (
-                <div className="py-20 text-center text-slate-400 text-sm">
+                <div className="py-20 text-center text-ink-dim text-sm">
                   Nenhum agendamento encontrado.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead className="bg-slate-50/50 font-semibold text-slate-500 text-xs">
+                  <table className="min-w-full divide-y divide-ink/10 text-sm">
+                    <thead className="bg-paper-dim/50 font-semibold text-ink-dim text-xs">
                       <tr>
                         <th className="px-6 py-3.5 text-left">Data/Hora</th>
                         <th className="px-6 py-3.5 text-left">Cliente</th>
@@ -480,25 +480,25 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                         <th className="px-6 py-3.5 text-right">Ação</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 text-slate-700">
+                    <tbody className="divide-y divide-ink/10 text-ink-dim">
                       {appointments
                         .sort((a,b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time))
                         .map(apt => (
-                          <tr key={apt.id} className="hover:bg-slate-50/40 transition">
+                          <tr key={apt.id} className="hover:bg-paper-dim/40 transition">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="font-bold text-slate-950">{apt.date.split('-').reverse().join('/')}</span>
-                              <span className="text-slate-400 ml-1.5 font-semibold text-xs">{apt.time}</span>
+                              <span className="font-bold text-ink">{apt.date.split('-').reverse().join('/')}</span>
+                              <span className="text-ink-dim ml-1.5 font-semibold text-xs">{apt.time}</span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <span className="font-semibold text-slate-900 block">{apt.clientName}</span>
-                                <span className="text-slate-400 text-xs">{apt.clientPhone}</span>
+                                <span className="font-semibold text-ink block">{apt.clientName}</span>
+                                <span className="text-ink-dim text-xs">{apt.clientPhone}</span>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <span className="text-slate-600 line-clamp-1 text-xs">{apt.serviceNames.join(', ')}</span>
+                              <span className="text-ink-dim line-clamp-1 text-xs">{apt.serviceNames.join(', ')}</span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-900">
+                            <td className="px-6 py-4 whitespace-nowrap font-bold text-ink">
                               R$ {apt.totalPrice.toFixed(2)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -526,15 +526,15 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
       {/* MODAL 1: Appointment Details Popup */}
       {showDetailModal && selectedApt && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
-          <div className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-xl animate-fade-in">
-            <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+          <div className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-xl animate-fade-in">
+            <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Gerenciar Atendimento</h3>
-                <p className="text-[10px] font-mono text-slate-400">ID: {selectedApt.id}</p>
+                <h3 className="text-base font-bold text-ink">Gerenciar Atendimento</h3>
+                <p className="text-[10px] font-mono text-ink-dim">ID: {selectedApt.id}</p>
               </div>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold transition"
+                className="text-ink-dim hover:text-ink font-bold transition"
               >
                 ✕
               </button>
@@ -547,31 +547,31 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   {selectedApt.clientName.substring(0, 2).toUpperCase()}
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-bold text-slate-900 text-lg">{selectedApt.clientName}</h4>
-                  <p className="text-sm text-slate-500 flex items-center gap-1">
-                    <Smartphone className="h-4 w-4 text-slate-400" /> {selectedApt.clientPhone}
+                  <h4 className="font-bold text-ink text-lg">{selectedApt.clientName}</h4>
+                  <p className="text-sm text-ink-dim flex items-center gap-1">
+                    <Smartphone className="h-4 w-4 text-ink-dim" /> {selectedApt.clientPhone}
                   </p>
                 </div>
               </div>
 
               {/* Appointment Specifics */}
-              <div className="grid grid-cols-2 gap-4 bg-slate-50/70 p-4 rounded-lg border border-slate-200 text-sm">
+              <div className="grid grid-cols-2 gap-4 bg-paper-dim/70 p-4 rounded-lg border border-ink/10 text-sm">
                 <div>
-                  <span className="text-slate-400 text-xs font-semibold block">DATA & HORA</span>
-                  <span className="font-bold text-slate-800">
+                  <span className="text-ink-dim text-xs font-semibold block">DATA & HORA</span>
+                  <span className="font-bold text-ink">
                     {selectedApt.date.split('-').reverse().join('/')} às {selectedApt.time}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-xs font-semibold block">DURAÇÃO</span>
-                  <span className="font-bold text-slate-800">{selectedApt.totalDurationMin} minutos</span>
+                  <span className="text-ink-dim text-xs font-semibold block">DURAÇÃO</span>
+                  <span className="font-bold text-ink">{selectedApt.totalDurationMin} minutos</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-xs font-semibold block">SERVIÇOS</span>
-                  <span className="font-bold text-slate-800">{selectedApt.serviceNames.join(', ')}</span>
+                  <span className="text-ink-dim text-xs font-semibold block">SERVIÇOS</span>
+                  <span className="font-bold text-ink">{selectedApt.serviceNames.join(', ')}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-xs font-semibold block">VALOR TOTAL</span>
+                  <span className="text-ink-dim text-xs font-semibold block">VALOR TOTAL</span>
                   <span className="font-extrabold text-brand-primary text-base">R$ {selectedApt.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
@@ -579,8 +579,8 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
               {/* Notes */}
               {selectedApt.notes && (
                 <div className="space-y-1.5">
-                  <span className="text-slate-400 text-xs font-bold block">OBSERVAÇÕES DO BARBEIRO</span>
-                  <p className="text-sm text-slate-700 italic bg-slate-50/70 p-3 rounded-lg border-l-2 border-slate-400">
+                  <span className="text-ink-dim text-xs font-bold block">OBSERVAÇÕES DO BARBEIRO</span>
+                  <p className="text-sm text-ink-dim italic bg-paper-dim/70 p-3 rounded-lg border-l-2 border-ink/20">
                     "{selectedApt.notes}"
                   </p>
                 </div>
@@ -588,55 +588,55 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
               {/* Status Indicator */}
               <div className="flex items-center justify-between py-1">
-                <span className="text-xs font-bold text-slate-400">STATUS ATUAL:</span>
+                <span className="text-xs font-bold text-ink-dim">STATUS ATUAL:</span>
                 {getStatusBadge(selectedApt.status)}
               </div>
 
               {/* WhatsApp Integration templates */}
-              <div className="border-t border-slate-200 pt-4 space-y-3">
-                <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase block">NOTIFICAÇÕES VIA WHATSAPP (MOCKUP)</span>
+              <div className="border-t border-ink/10 pt-4 space-y-3">
+                <span className="text-[10px] font-bold tracking-widest text-ink-dim uppercase block">NOTIFICAÇÕES VIA WHATSAPP (MOCKUP)</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <a
                     href={getWhatsAppLink(selectedApt, 'confirm')}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white border border-slate-200 hover:border-brand-primary hover:text-brand-primary text-slate-700 text-xs font-bold rounded-lg transition text-center"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-card border border-ink/10 hover:border-brand-primary hover:text-brand-primary text-ink-dim text-xs font-bold rounded-lg transition text-center"
                   >
-                    Enviar Confirmação <ExternalLink className="h-3 w-3 text-slate-400" />
+                    Enviar Confirmação <ExternalLink className="h-3 w-3 text-ink-dim" />
                   </a>
                   <a
                     href={getWhatsAppLink(selectedApt, 'reminder')}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white border border-slate-200 hover:border-brand-primary hover:text-brand-primary text-slate-700 text-xs font-bold rounded-lg transition text-center"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-card border border-ink/10 hover:border-brand-primary hover:text-brand-primary text-ink-dim text-xs font-bold rounded-lg transition text-center"
                   >
-                    Enviar Lembrete <ExternalLink className="h-3 w-3 text-slate-400" />
+                    Enviar Lembrete <ExternalLink className="h-3 w-3 text-ink-dim" />
                   </a>
                   <a
                     href={getWhatsAppLink(selectedApt, 'done')}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white border border-slate-200 hover:border-brand-primary hover:text-brand-primary text-slate-700 text-xs font-bold rounded-lg transition text-center"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-card border border-ink/10 hover:border-brand-primary hover:text-brand-primary text-ink-dim text-xs font-bold rounded-lg transition text-center"
                   >
-                    Avisar Conclusão <ExternalLink className="h-3 w-3 text-slate-400" />
+                    Avisar Conclusão <ExternalLink className="h-3 w-3 text-ink-dim" />
                   </a>
                 </div>
               </div>
             </div>
 
             {/* Actions Footer */}
-            <div className="bg-slate-50/50 p-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-paper-dim/50 p-4 border-t border-ink/10 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleDeleteApt(selectedApt.id)}
-                  className="p-2.5 bg-white border border-slate-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition cursor-pointer"
+                  className="p-2.5 bg-card border border-ink/10 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition cursor-pointer"
                   title="Excluir Horário"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleOpenEdit}
-                  className="flex items-center gap-1 py-2 px-3.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 hover:text-brand-primary hover:border-brand-primary/30 text-xs font-bold transition cursor-pointer"
+                  className="flex items-center gap-1 py-2 px-3.5 bg-card border border-ink/10 text-ink-dim rounded-lg hover:bg-paper hover:text-brand-primary hover:border-brand-primary/30 text-xs font-bold transition cursor-pointer"
                 >
                   <Edit2 className="h-3.5 w-3.5" /> Editar
                 </button>
@@ -656,7 +656,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   <>
                     <button
                       onClick={() => handleUpdateStatus(selectedApt.id, 'cancelled')}
-                      className="py-2 px-3 bg-white border border-red-200 text-red-700 text-xs font-bold rounded-lg hover:bg-red-50 transition cursor-pointer"
+                      className="py-2 px-3 bg-card border border-red-200 text-red-700 text-xs font-bold rounded-lg hover:bg-red-50 transition cursor-pointer"
                     >
                       Cancelar Horário
                     </button>
@@ -669,12 +669,12 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   </>
                 )}
                 {selectedApt.status === 'completed' && (
-                  <span className="text-xs text-indigo-600 font-bold">Atendimento Finalizado ✓</span>
+                  <span className="text-xs text-wine font-bold">Atendimento Finalizado ✓</span>
                 )}
                 {selectedApt.status === 'cancelled' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedApt.id, 'confirmed')}
-                    className="py-2 px-3 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition cursor-pointer"
+                    className="py-2 px-3 bg-card border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition cursor-pointer"
                   >
                     Reativar
                   </button>
@@ -690,14 +690,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
           <form
             onSubmit={handleSaveEdit}
-            className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
+            className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Editar Agendamento</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Editar Agendamento</h3>
               <button
                 type="button"
                 onClick={() => setShowEditModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -705,11 +705,11 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">CLIENTE</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">CLIENTE</label>
                 <select
                   value={editClient}
                   onChange={(e) => setEditClient(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.name} ({c.phone})</option>
@@ -719,21 +719,21 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">HORÁRIO</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">HORÁRIO</label>
                   <input
                     type="time"
                     required
                     value={editTime}
                     onChange={(e) => setEditTime(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">STATUS</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">STATUS</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as any)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                   >
                     <option value="confirmed">Confirmado</option>
                     <option value="pending">Pendente</option>
@@ -744,14 +744,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">SERVIÇOS (MÚLTIPLOS)</label>
-                <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto border border-slate-200 p-2.5 rounded-lg bg-slate-50/50">
+                <label className="block text-xs font-bold text-ink-dim mb-1">SERVIÇOS (MÚLTIPLOS)</label>
+                <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto border border-ink/10 p-2.5 rounded-lg bg-paper-dim/50">
                   {services.map((srv) => {
                     const isChecked = editServices.includes(srv.id);
                     return (
                       <label
                         key={srv.id}
-                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer text-xs border transition ${isChecked ? 'bg-white border-brand-primary/30 shadow-sm text-brand-primary font-bold' : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-100'}`}
+                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer text-xs border transition ${isChecked ? 'bg-card border-brand-primary/30 shadow-sm text-brand-primary font-bold' : 'bg-transparent border-transparent text-ink-dim hover:bg-paper-dim'}`}
                       >
                         <input
                           type="checkbox"
@@ -771,29 +771,29 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   })}
                 </div>
                 {/* Visual calculation indicators */}
-                <div className="flex justify-between text-xs font-semibold text-slate-500 mt-2 px-1">
+                <div className="flex justify-between text-xs font-semibold text-ink-dim mt-2 px-1">
                   <span>Duração total: {editTotalDuration} min</span>
                   <span>Valor total: R$ {editTotalPrice.toFixed(2)}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">OBSERVAÇÕES</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">OBSERVAÇÕES</label>
                 <textarea
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
                   placeholder="Ex: Cliente tem alergia a gel de barbear"
                   rows={2}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none"
                 />
               </div>
             </div>
 
-            <div className="bg-slate-50/50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper-dim/50 p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowEditModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition"
               >
                 Cancelar
               </button>
@@ -813,14 +813,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
           <form
             onSubmit={handleSaveCreate}
-            className="bg-white rounded-xl border border-slate-200 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
+            className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
           >
-            <div className="p-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Novo Agendamento</h3>
+            <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink">Novo Agendamento</h3>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-950 font-bold"
+                className="text-ink-dim hover:text-ink font-bold"
               >
                 ✕
               </button>
@@ -828,12 +828,12 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">CLIENTE</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">CLIENTE</label>
                 <select
                   required
                   value={newClient}
                   onChange={(e) => setNewClient(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                 >
                   <option value="">-- Selecione o Cliente --</option>
                   {clients.map(c => (
@@ -844,36 +844,36 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">DATA</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">DATA</label>
                   <input
                     type="date"
                     required
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1">HORA</label>
+                  <label className="block text-xs font-bold text-ink-dim mb-1">HORA</label>
                   <input
                     type="time"
                     required
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
-                    className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">SERVIÇOS (MÚLTIPLOS)</label>
-                <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto border border-slate-200 p-2.5 rounded-lg bg-slate-50/50">
+                <label className="block text-xs font-bold text-ink-dim mb-1">SERVIÇOS (MÚLTIPLOS)</label>
+                <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto border border-ink/10 p-2.5 rounded-lg bg-paper-dim/50">
                   {services.map((srv) => {
                     const isChecked = newServices.includes(srv.id);
                     return (
                       <label
                         key={srv.id}
-                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer text-xs border transition ${isChecked ? 'bg-white border-brand-primary/30 shadow-sm text-brand-primary font-bold' : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-100'}`}
+                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer text-xs border transition ${isChecked ? 'bg-card border-brand-primary/30 shadow-sm text-brand-primary font-bold' : 'bg-transparent border-transparent text-ink-dim hover:bg-paper-dim'}`}
                       >
                         <input
                           type="checkbox"
@@ -893,29 +893,29 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   })}
                 </div>
                 {/* Visual calculation indicators */}
-                <div className="flex justify-between text-xs font-semibold text-slate-500 mt-2 px-1">
+                <div className="flex justify-between text-xs font-semibold text-ink-dim mt-2 px-1">
                   <span>Duração total estimada: {autoTotalDuration} min</span>
                   <span>Valor total estimado: R$ {autoTotalPrice.toFixed(2)}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">OBSERVAÇÕES DO ATENDIMENTO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">OBSERVAÇÕES DO ATENDIMENTO</label>
                 <textarea
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="Ex: Corte degradê alto, toalha quente, cafezinho"
                   rows={2}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none"
                 />
               </div>
             </div>
 
-            <div className="bg-slate-50/50 p-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <div className="bg-paper-dim/50 p-4 border-t border-ink/10 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition"
+                className="px-4 py-2 border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition"
               >
                 Cancelar
               </button>

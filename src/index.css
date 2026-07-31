@@ -1,18 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-display: "Space Grotesk", sans-serif;
-  
-  /* Defaults only — components override these directly (not via an intermediate --brand-primary
-     variable) so the per-company color actually takes effect. A custom property's var() fallback
-     is resolved once at its declaration point (:root here) and does not re-resolve when an
-     ancestor further down merely sets --brand-primary; only overriding --color-brand-primary
-     itself cascades correctly. */
-  --color-brand-primary: #4f46e5;
-  --color-brand-secondary: #312e81;
+  --font-display: "Fraunces", serif;
+
+  /* "Encadernado" — leather-bound ledger palette: ink-green rail, bone paper,
+     brass + wine accents. Defaults only — components override these directly
+     (not via an intermediate --brand-primary variable) so the per-company
+     color actually takes effect. A custom property's var() fallback is
+     resolved once at its declaration point (:root here) and does not
+     re-resolve when an ancestor further down merely sets --brand-primary;
+     only overriding --color-brand-primary itself cascades correctly. */
+  --color-brand-primary: #ba8b3f;
+  --color-brand-secondary: #6f2f40;
+
+  /* Fixed platform chrome — not tenant-customizable, same role white/slate-50 played before. */
+  --color-paper: #f4ead9;
+  --color-paper-dim: #ece0c9;
+  --color-card: #fdf8ee;
+  --color-rail: #182821;
+  --color-ink: #241c13;
+  --color-ink-dim: #7d6e54;
+  --color-ink-line: #241c1320;
+  --color-brass: #ba8b3f;
+  --color-brass-soft: #ba8b3f2e;
+  --color-wine: #6f2f40;
+  --color-wine-soft: #f0dfe0;
+  --color-ok: #6e8c62;
+  --color-warn: #b0723a;
+  --color-bad: #9c4a42;
 }
 
 /* Custom modern scrollbar */
@@ -26,17 +44,19 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.25);
+  background: rgba(125, 110, 84, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.45);
+  background: rgba(125, 110, 84, 0.45);
 }
 
 /* Base custom styles */
 body {
   font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -51,4 +71,3 @@ body {
 .animate-soft-pulse {
   animation: soft-pulse 2s infinite ease-in-out;
 }
-

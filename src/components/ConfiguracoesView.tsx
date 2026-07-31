@@ -61,8 +61,8 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
   const [logoUrl, setLogoUrl] = useState(company?.logoUrl || '');
   const [coverPhotoUrl, setCoverPhotoUrl] = useState(company?.coverPhotoUrl || '');
   const [businessType, setBusinessType] = useState(company?.businessType || 'barbershop');
-  const [primaryColor, setPrimaryColor] = useState(company?.primaryColor || '#4f46e5');
-  const [secondaryColor, setSecondaryColor] = useState(company?.secondaryColor || '#312e81');
+  const [primaryColor, setPrimaryColor] = useState(company?.primaryColor || '#ba8b3f');
+  const [secondaryColor, setSecondaryColor] = useState(company?.secondaryColor || '#6f2f40');
 
   useEffect(() => {
     if (company) {
@@ -73,8 +73,8 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
       setLogoUrl(company.logoUrl || '');
       setCoverPhotoUrl(company.coverPhotoUrl || '');
       setBusinessType(company.businessType || 'barbershop');
-      setPrimaryColor(company.primaryColor || '#4f46e5');
-      setSecondaryColor(company.secondaryColor || '#312e81');
+      setPrimaryColor(company.primaryColor || '#ba8b3f');
+      setSecondaryColor(company.secondaryColor || '#6f2f40');
     }
   }, [company]);
 
@@ -215,34 +215,34 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* 1. Public Scheduling Hub Card */}
-      <div className="bg-slate-900 text-white p-6 rounded-xl border border-slate-800 shadow-sm space-y-4">
+      <div className="bg-rail text-paper p-6 rounded-[22px_8px_22px_8px] border border-brass-soft shadow-sm space-y-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <span className="px-2 py-0.5 bg-brand-primary/15 text-brand-primary text-[10px] font-bold uppercase rounded-md tracking-wider">
               Área do Cliente Online
             </span>
             <h2 className="text-xl font-display font-bold">Portal de Agendamentos Online</h2>
-            <p className="text-xs text-slate-400">Seus clientes podem marcar horários sozinhos sem login ou aplicativo.</p>
+            <p className="text-xs text-paper/60">Seus clientes podem marcar horários sozinhos sem login ou aplicativo.</p>
           </div>
-          <Globe className="h-8 w-8 text-slate-700" />
+          <Globe className="h-8 w-8 text-paper/40" />
         </div>
 
-        <div className="bg-slate-850 p-4 rounded-lg border border-slate-800 space-y-3">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">SEU LINK EXCLUSIVO DE AGENDAMENTO:</p>
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg p-2.5 overflow-hidden">
-            <span className="text-xs font-mono text-slate-300 truncate flex-1">{publicBookingUrl}</span>
+        <div className="bg-white/5 p-4 rounded-lg border border-brass-soft space-y-3">
+          <p className="text-xs font-semibold text-paper/60 uppercase tracking-wider">SEU LINK EXCLUSIVO DE AGENDAMENTO:</p>
+          <div className="flex items-center gap-2 bg-ink/20 border border-brass-soft rounded-lg p-2.5 overflow-hidden">
+            <span className="text-xs font-mono text-paper/80 truncate flex-1">{publicBookingUrl}</span>
             <button
               onClick={handleCopyLink}
-              className="p-1.5 bg-slate-800 text-white rounded-md hover:bg-slate-700 transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold flex-shrink-0"
+              className="p-1.5 bg-white/10 text-paper rounded-md hover:bg-white/20 transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold flex-shrink-0"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? 'Copiado!' : 'Copiar'}
             </button>
           </div>
         </div>
 
         <div className="flex items-center justify-between text-xs pt-2">
-          <span className="text-slate-400 font-semibold">
+          <span className="text-paper/60 font-semibold">
             Status: {allowOnlineBooking ? (
               <span className="text-emerald-400 font-bold">✓ Reservas abertas</span>
             ) : (
@@ -264,42 +264,42 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
       <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Col 1: Shop Profile Info */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-5">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5 border-b border-slate-200 pb-3">
-            <Building className="h-4 w-4 text-slate-400" /> Identidade & Customização
+        <div className="bg-card p-6 rounded-xl border border-ink/10 shadow-sm space-y-5">
+          <h3 className="text-sm font-bold text-ink flex items-center gap-1.5 border-b border-ink/10 pb-3">
+            <Building className="h-4 w-4 text-ink-dim" /> Identidade & Customização
           </h3>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">NOME DO ESTABELECIMENTO</label>
+              <label className="block text-xs font-bold text-ink-dim mb-1">NOME DO ESTABELECIMENTO</label>
               <input
                 type="text"
                 required
                 value={shopName}
                 onChange={(e) => setShopName(e.target.value)}
-                className="w-full border border-slate-200 p-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white text-slate-800"
+                className="w-full border border-ink/10 p-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card text-ink"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">TELEFONE DE ATENDIMENTO</label>
+              <label className="block text-xs font-bold text-ink-dim mb-1">TELEFONE DE ATENDIMENTO</label>
               <div className="relative rounded-lg shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-dim">
                   <Smartphone className="h-4 w-4" />
                 </div>
                 <input
                   type="text"
                   value={shopPhone}
                   onChange={(e) => setShopPhone(e.target.value)}
-                  className="w-full border border-slate-200 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white text-slate-800"
+                  className="w-full border border-ink/10 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card text-ink"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">ENDEREÇO COMPLETO</label>
+              <label className="block text-xs font-bold text-ink-dim mb-1">ENDEREÇO COMPLETO</label>
               <div className="relative rounded-lg shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-dim">
                   <MapPin className="h-4 w-4" />
                 </div>
                 <input
@@ -307,40 +307,40 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                   value={shopAddress}
                   onChange={(e) => setShopAddress(e.target.value)}
                   placeholder="Rua, Número - Bairro, Cidade"
-                  className="w-full border border-slate-200 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white text-slate-800"
+                  className="w-full border border-ink/10 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card text-ink"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-1">INSTAGRAM</label>
+              <label className="block text-xs font-bold text-ink-dim mb-1">INSTAGRAM</label>
               <div className="relative rounded-lg shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-dim">
                   <Instagram className="h-4 w-4" />
                 </div>
                 <input
                   type="text"
                   value={shopInstagram}
                   onChange={(e) => setShopInstagram(e.target.value)}
-                  className="w-full border border-slate-200 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white text-slate-800"
+                  className="w-full border border-ink/10 pl-9 pr-3 py-2.5 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card text-ink"
                 />
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-4 space-y-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Identidade Visual & Cores</span>
+            <div className="border-t border-ink/8 pt-4 space-y-4">
+              <span className="text-[10px] font-black text-ink-dim uppercase tracking-widest block">Identidade Visual & Cores</span>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">LOGOTIPO DA EMPRESA</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">LOGOTIPO DA EMPRESA</label>
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div className="h-12 w-12 rounded-lg border border-ink/10 bg-paper flex items-center justify-center overflow-hidden flex-shrink-0">
                     {logoUrl ? (
                       <img src={logoUrl} alt="Logo" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
                     ) : (
-                      <Building className="h-5 w-5 text-slate-300" />
+                      <Building className="h-5 w-5 text-ink-dim/50" />
                     )}
                   </div>
-                  <label className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-600 hover:border-brand-primary hover:text-brand-primary transition cursor-pointer">
+                  <label className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-dashed border-ink/20 rounded-lg text-xs font-semibold text-ink-dim hover:border-brand-primary hover:text-brand-primary transition cursor-pointer">
                     {uploadingLogo ? (
                       <>
                         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Enviando...
@@ -362,20 +362,20 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                 {logoUploadError && (
                   <p className="text-[10px] text-red-600 font-semibold mt-1">{logoUploadError}</p>
                 )}
-                <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, WEBP ou SVG, até 2MB. Clique em "Salvar Configurações" para aplicar.</p>
+                <p className="text-[10px] text-ink-dim mt-1">PNG, JPG, WEBP ou SVG, até 2MB. Clique em "Salvar Configurações" para aplicar.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">FOTO DE CAPA (PÁGINA DE AGENDAMENTO)</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">FOTO DE CAPA (PÁGINA DE AGENDAMENTO)</label>
                 <div className="space-y-2">
-                  <div className="h-20 w-full rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
+                  <div className="h-20 w-full rounded-lg border border-ink/10 bg-paper flex items-center justify-center overflow-hidden">
                     {coverPhotoUrl ? (
                       <img src={coverPhotoUrl} alt="Foto de capa" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
-                      <ImageIcon className="h-5 w-5 text-slate-300" />
+                      <ImageIcon className="h-5 w-5 text-ink-dim/50" />
                     )}
                   </div>
-                  <label className="flex items-center justify-center gap-1.5 px-3 py-2 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-600 hover:border-brand-primary hover:text-brand-primary transition cursor-pointer">
+                  <label className="flex items-center justify-center gap-1.5 px-3 py-2 border border-dashed border-ink/20 rounded-lg text-xs font-semibold text-ink-dim hover:border-brand-primary hover:text-brand-primary transition cursor-pointer">
                     {uploadingCoverPhoto ? (
                       <>
                         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Enviando...
@@ -397,15 +397,15 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                 {coverPhotoUploadError && (
                   <p className="text-[10px] text-red-600 font-semibold mt-1">{coverPhotoUploadError}</p>
                 )}
-                <p className="text-[10px] text-slate-400 mt-1">Aparece como fundo na página pública de agendamento. PNG, JPG ou WEBP, até 5MB.</p>
+                <p className="text-[10px] text-ink-dim mt-1">Aparece como fundo na página pública de agendamento. PNG, JPG ou WEBP, até 5MB.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">RAMO DE ATUAÇÃO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">RAMO DE ATUAÇÃO</label>
                 <select
                   value={businessType}
                   onChange={(e) => setBusinessType(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-xs font-semibold bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-xs font-semibold bg-card text-ink-dim focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 >
                   <option value="barbershop">Barbearia</option>
                   <option value="beauty_salon">Salão de Beleza / Estética</option>
@@ -415,37 +415,37 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 mb-1">COR PRIMÁRIA</label>
+                  <label className="block text-[10px] font-black text-ink-dim mb-1">COR PRIMÁRIA</label>
                   <div className="flex items-center gap-1">
                     <input
                       type="color"
                       value={primaryColor}
                       onChange={(e) => setPrimaryColor(e.target.value)}
-                      className="h-8 w-8 rounded cursor-pointer border border-slate-200 flex-shrink-0"
+                      className="h-8 w-8 rounded cursor-pointer border border-ink/10 flex-shrink-0"
                     />
                     <input
                       type="text"
                       value={primaryColor}
                       onChange={(e) => setPrimaryColor(e.target.value)}
-                      className="w-full border border-slate-200 p-1 rounded text-[10px] font-mono focus:outline-none"
+                      className="w-full border border-ink/10 p-1 rounded text-[10px] font-mono focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 mb-1">COR SECUNDÁRIA</label>
+                  <label className="block text-[10px] font-black text-ink-dim mb-1">COR SECUNDÁRIA</label>
                   <div className="flex items-center gap-1">
                     <input
                       type="color"
                       value={secondaryColor}
                       onChange={(e) => setSecondaryColor(e.target.value)}
-                      className="h-8 w-8 rounded cursor-pointer border border-slate-200 flex-shrink-0"
+                      className="h-8 w-8 rounded cursor-pointer border border-ink/10 flex-shrink-0"
                     />
                     <input
                       type="text"
                       value={secondaryColor}
                       onChange={(e) => setSecondaryColor(e.target.value)}
-                      className="w-full border border-slate-200 p-1 rounded text-[10px] font-mono focus:outline-none"
+                      className="w-full border border-ink/10 p-1 rounded text-[10px] font-mono focus:outline-none"
                     />
                   </div>
                 </div>
@@ -453,9 +453,9 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
 
               {/* Live preview: how these colors will actually look once saved (buttons, badges, active states) */}
               <div>
-                <label className="block text-[10px] font-black text-slate-400 mb-1.5">PRÉVIA</label>
+                <label className="block text-[10px] font-black text-ink-dim mb-1.5">PRÉVIA</label>
                 <div
-                  className="rounded-lg border border-slate-200 p-3 space-y-2.5 bg-slate-50/50"
+                  className="rounded-lg border border-ink/10 p-3 space-y-2.5 bg-paper-dim/50"
                   style={{ '--color-brand-primary': primaryColor, '--color-brand-secondary': secondaryColor } as React.CSSProperties}
                 >
                   <div className="flex items-center gap-2">
@@ -475,7 +475,7 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                     className={`relative rounded-lg p-2.5 text-white text-[10px] font-semibold overflow-hidden ${!coverPhotoUrl ? 'bg-gradient-to-r from-brand-secondary to-brand-primary' : ''}`}
                     style={coverPhotoUrl ? { backgroundImage: `url(${coverPhotoUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                   >
-                    {coverPhotoUrl && <div className="absolute inset-0 bg-slate-950/50" />}
+                    {coverPhotoUrl && <div className="absolute inset-0 bg-ink/50" />}
                     <span className="relative">Banner de exemplo (como o cliente vê ao agendar online)</span>
                   </div>
                 </div>
@@ -485,15 +485,15 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
         </div>
 
         {/* Col 2: Operational Schedule Parameters */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-5 md:col-span-2">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5 border-b border-slate-200 pb-3">
-            <Clock className="h-4 w-4 text-slate-400" /> Agenda & Horários de Funcionamento
+        <div className="bg-card p-6 rounded-xl border border-ink/10 shadow-sm space-y-5 md:col-span-2">
+          <h3 className="text-sm font-bold text-ink flex items-center gap-1.5 border-b border-ink/10 pb-3">
+            <Clock className="h-4 w-4 text-ink-dim" /> Agenda & Horários de Funcionamento
           </h3>
 
           <div className="space-y-5">
             {/* Work days selectors */}
             <div>
-              <label className="block text-xs font-bold text-slate-400 mb-2">DIAS DE TRABALHO</label>
+              <label className="block text-xs font-bold text-ink-dim mb-2">DIAS DE TRABALHO</label>
               <div className="flex flex-wrap gap-2">
                 {daysOfWeek.map(day => {
                   const isChecked = workDays.includes(day.value);
@@ -502,7 +502,7 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                       key={day.value}
                       type="button"
                       onClick={() => toggleDay(day.value)}
-                      className={`px-3 py-2 text-xs font-bold rounded-lg border transition cursor-pointer ${isChecked ? 'bg-brand-primary border-brand-primary text-white shadow-2xs' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                      className={`px-3 py-2 text-xs font-bold rounded-lg border transition cursor-pointer ${isChecked ? 'bg-brand-primary border-brand-primary text-white shadow-2xs' : 'bg-card border-ink/10 text-ink-dim hover:bg-paper'}`}
                     >
                       {day.label}
                     </button>
@@ -514,23 +514,23 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
             {/* Hours configuration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">HORÁRIO DE ABERTURA</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">HORÁRIO DE ABERTURA</label>
                 <input
                   type="time"
                   required
                   value={openTime}
                   onChange={(e) => setOpenTime(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">HORÁRIO DE FECHAMENTO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">HORÁRIO DE FECHAMENTO</label>
                 <input
                   type="time"
                   required
                   value={closeTime}
                   onChange={(e) => setCloseTime(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
             </div>
@@ -538,33 +538,33 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
             {/* Lunch Hour Break */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">INTERVALO ALMOÇO (INÍCIO)</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">INTERVALO ALMOÇO (INÍCIO)</label>
                 <input
                   type="time"
                   value={lunchStart}
                   onChange={(e) => setLunchStart(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">INTERVALO ALMOÇO (FIM)</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">INTERVALO ALMOÇO (FIM)</label>
                 <input
                   type="time"
                   value={lunchEnd}
                   onChange={(e) => setLunchEnd(e.target.value)}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
             </div>
 
             {/* Slot interval and toggle */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-ink/10 pt-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-1">INTERVALO ENTRE AGENDAMENTOS</label>
+                <label className="block text-xs font-bold text-ink-dim mb-1">INTERVALO ENTRE AGENDAMENTOS</label>
                 <select
                   value={slotIntervalMin}
                   onChange={(e) => setSlotIntervalMin(Number(e.target.value))}
-                  className="w-full border border-slate-200 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-white"
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
                 >
                   <option value={15}>15 minutos</option>
                   <option value={30}>30 minutos</option>
@@ -574,7 +574,7 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 mb-2">AGENDAMENTO ONLINE ATIVO</label>
+                <label className="block text-xs font-bold text-ink-dim mb-2">AGENDAMENTO ONLINE ATIVO</label>
                 <label className="flex items-center gap-2.5 cursor-pointer mt-1">
                   <input
                     type="checkbox"
@@ -582,7 +582,7 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                     onChange={(e) => setAllowOnlineBooking(e.target.checked)}
                     className="rounded accent-brand-primary focus:ring-brand-primary h-4 w-4"
                   />
-                  <span className="text-xs font-semibold text-slate-700">Permitir auto-agendamento</span>
+                  <span className="text-xs font-semibold text-ink-dim">Permitir auto-agendamento</span>
                 </label>
               </div>
             </div>

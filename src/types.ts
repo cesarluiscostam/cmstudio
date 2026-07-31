@@ -13,7 +13,7 @@ export interface Company {
   logoUrl?: string;
   coverPhotoUrl?: string;
   businessType?: 'barbershop' | 'beauty_salon' | 'manicure' | 'spa' | 'other';
-  primaryColor?: string; // Hex color for company branding (e.g. #4f46e5)
+  primaryColor?: string; // Hex color for company branding (e.g. #ba8b3f)
   secondaryColor?: string; // Hex color
   subscriptionFee?: number; // Monthly SaaS fee paid by the company to the app owner
   createdAt: string;

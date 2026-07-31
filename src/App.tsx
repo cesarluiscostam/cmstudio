@@ -276,20 +276,20 @@ export default function App() {
 
   // Dynamic Branding Stylesheet injection
   const brandStyle = {
-    '--color-brand-primary': company?.primaryColor || '#4f46e5',
-    '--color-brand-secondary': company?.secondaryColor || '#312e81',
+    '--color-brand-primary': company?.primaryColor || '#ba8b3f',
+    '--color-brand-secondary': company?.secondaryColor || '#6f2f40',
   } as React.CSSProperties;
 
   // Shared notification dropdown panel — rendered from both the mobile header rail and the
   // desktop top bar bell buttons, since each only exists in one of the two layouts.
   const notificationDropdown = showNotifications && (
-    <div className="absolute right-0 mt-2.5 w-80 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 space-y-3">
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <span className="text-xs font-bold text-slate-900">Notificações Recentes</span>
+    <div className="absolute right-0 mt-2.5 w-80 max-w-[calc(100vw-2rem)] bg-card border border-ink/10 rounded-[18px_8px_18px_8px] shadow-xl p-4 z-50 space-y-3">
+      <div className="flex items-center justify-between border-b border-ink/10 pb-2">
+        <span className="text-xs font-bold text-ink font-display">Notificações Recentes</span>
         {notificationsCount > 0 && (
           <button
             onClick={handleMarkNotificationsRead}
-            className="text-[10px] font-bold text-slate-500 hover:text-slate-950 underline cursor-pointer"
+            className="text-[10px] font-bold text-ink-dim hover:text-ink underline cursor-pointer"
           >
             Limpar alertas
           </button>
@@ -298,19 +298,19 @@ export default function App() {
 
       <div className="space-y-2 max-h-[220px] overflow-y-auto">
         {notifications.length === 0 ? (
-          <p className="text-xs text-slate-400 text-center py-6">Nenhum alerta recente.</p>
+          <p className="text-xs text-ink-dim text-center py-6">Nenhum alerta recente.</p>
         ) : (
           notifications.map(n => (
             <div
               key={n.id}
-              className={`p-2.5 rounded-xl border text-xs text-slate-700 space-y-1 ${n.read ? 'bg-white border-slate-200' : 'bg-slate-50 border-slate-200 font-medium'}`}
+              className={`p-2.5 rounded-lg border text-xs text-ink space-y-1 ${n.read ? 'bg-card border-ink/10' : 'bg-paper border-ink/10 font-medium'}`}
             >
-              <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
+              <div className="flex justify-between items-center text-[10px] font-bold text-ink-dim font-mono">
                 <span>ONLINE REQUEST</span>
                 <span>{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-              <p className="font-semibold text-slate-900 text-xs">{n.title}</p>
-              <p className="text-slate-500 text-[11px] leading-tight">{n.message}</p>
+              <p className="font-semibold text-ink text-xs">{n.title}</p>
+              <p className="text-ink-dim text-[11px] leading-tight">{n.message}</p>
             </div>
           ))
         )}
@@ -319,27 +319,27 @@ export default function App() {
   );
 
   return (
-    <div style={brandStyle} className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans text-slate-800">
-      
+    <div style={brandStyle} className="min-h-screen bg-paper flex flex-col md:flex-row font-sans text-ink md:p-4 md:gap-4">
+
       {/* Offline Status Warning Bar */}
       {!isOnline && (
-        <div className="fixed top-0 inset-x-0 z-50 bg-amber-500 text-slate-950 px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
+        <div className="fixed top-0 inset-x-0 z-50 bg-warn text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
           <WifiOff className="h-4 w-4" />
           <span>Você está offline. Visualizando a agenda carregada em modo leitura local.</span>
         </div>
       )}
 
       {/* MOBILE HEADER RAIL */}
-      <div className={`md:hidden bg-brand-primary text-white p-4 flex items-center justify-between z-40 ${!isOnline ? 'mt-8' : ''}`}>
+      <div className={`md:hidden bg-rail text-paper p-4 flex items-center justify-between z-40 ${!isOnline ? 'mt-8' : ''}`}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {company?.logoUrl ? (
-            <img src={company.logoUrl} alt="Logo" className="h-8 w-8 object-contain rounded flex-shrink-0" referrerPolicy="no-referrer" />
+            <img src={company.logoUrl} alt="Logo" className="h-8 w-8 object-contain rounded-full flex-shrink-0" referrerPolicy="no-referrer" />
           ) : (
-            <div className="h-8 w-8 rounded-lg bg-white p-1 flex items-center justify-center flex-shrink-0">
+            <div className="h-8 w-8 rounded-full border border-brass p-1.5 flex items-center justify-center flex-shrink-0">
               <img src="/logo-mark.png" alt="CM Studio" className="h-full w-full object-contain" />
             </div>
           )}
-          <span className="font-display font-black text-sm tracking-tight truncate">
+          <span className="font-display font-semibold text-base tracking-tight truncate">
             {user?.role === 'super_admin' ? 'Master Admin' : (company?.name || 'CM Studio')}
           </span>
         </div>
@@ -349,11 +349,11 @@ export default function App() {
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg relative transition"
+                className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg relative transition"
               >
                 <Bell className="h-4 w-4" />
                 {notificationsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-wine text-paper text-[9px] font-bold rounded-full flex items-center justify-center">
                     {notificationsCount}
                   </span>
                 )}
@@ -361,10 +361,10 @@ export default function App() {
               {notificationDropdown}
             </div>
           )}
-          
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition"
+            className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition"
           >
             {mobileMenuOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
           </button>
@@ -373,24 +373,24 @@ export default function App() {
 
       {/* BACKOFFICE SIDEBAR (Desktop & Mobile expanded) */}
       <aside
-        className={`bg-white text-slate-600 border-r border-slate-200 w-full md:w-64 min-h-screen flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 overflow-y-auto ${mobileMenuOpen ? 'fixed inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
+        className={`bg-rail text-paper/80 w-full md:w-64 min-h-screen md:min-h-0 flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 overflow-y-auto md:self-start md:rounded-[22px_8px_22px_8px] md:shadow-[0_16px_34px_-18px_rgba(24,40,33,0.55)] ${mobileMenuOpen ? 'fixed inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
       >
         <div className="space-y-8 p-6">
           {/* Brand Logo Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               {company?.logoUrl ? (
-                <img src={company.logoUrl} alt="Logo" className="h-9 w-9 object-contain rounded-lg border border-slate-200" referrerPolicy="no-referrer" />
+                <img src={company.logoUrl} alt="Logo" className="h-9 w-9 object-contain rounded-full border border-brass-soft" referrerPolicy="no-referrer" />
               ) : (
-                <div className="h-9 w-9 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-md">
+                <div className="h-9 w-9 rounded-full border border-brass p-1.5 flex items-center justify-center flex-shrink-0">
                   <img src="/logo-mark.png" alt="CM Studio" className="h-full w-full object-contain" />
                 </div>
               )}
               <div className="flex flex-col">
-                <span className="font-display font-black text-xs tracking-tight text-slate-900 leading-none truncate max-w-[110px]">
+                <span className="font-display font-semibold text-sm tracking-tight text-paper leading-none truncate max-w-[110px]">
                   {user?.role === 'super_admin' ? 'Master Admin' : (company?.name || 'CM Studio')}
                 </span>
-                <span className="text-[9px] font-bold text-brand-primary tracking-wider uppercase mt-1">
+                <span className="text-[9px] font-bold text-brass tracking-wider uppercase mt-1.5 font-mono">
                   {user?.role === 'super_admin' ? 'Plataforma SaaS' : (
                     company?.businessType === 'beauty_salon' ? 'Salão de Beleza' :
                     company?.businessType === 'manicure' ? 'Unhas & Manicure' : 'Barbearia'
@@ -401,7 +401,7 @@ export default function App() {
           </div>
 
           {/* Nav Items list */}
-          <nav className="space-y-1 pt-4">
+          <nav className="space-y-1 pt-4 border-t border-brass-soft">
             {sidebarItems.map((item) => {
               const isActive = activeTab === item.id;
               const Icon = item.icon;
@@ -412,7 +412,7 @@ export default function App() {
                     setActiveTab(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition cursor-pointer ${isActive ? 'bg-brand-primary/10 text-brand-primary shadow-xs font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                  className={`w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm font-semibold transition cursor-pointer mt-3 ${isActive ? 'bg-brand-primary/15 text-brand-primary font-bold border-l-2 border-brand-primary' : 'text-paper/70 hover:bg-white/5 hover:text-paper border-l-2 border-transparent'}`}
                 >
                   <Icon className="h-4.5 w-4.5 flex-shrink-0" />
                   <span>{item.label}</span>
@@ -429,9 +429,9 @@ export default function App() {
                   setRoute('public-booking');
                   setMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-bold text-brand-primary hover:bg-brand-primary/5 transition cursor-pointer mt-4 border border-dashed border-brand-primary/20"
+                className="w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm font-bold text-brass hover:bg-white/5 transition cursor-pointer mt-4 border border-dashed border-brass-soft"
               >
-                <Globe className="h-4.5 w-4.5 flex-shrink-0 text-brand-primary animate-pulse" />
+                <Globe className="h-4.5 w-4.5 flex-shrink-0 text-brass" />
                 <span>Ver Página do Cliente</span>
               </button>
             )}
@@ -439,14 +439,14 @@ export default function App() {
         </div>
 
         {/* Footer profile area & logout */}
-        <div className="p-6 border-t border-slate-200 space-y-4">
+        <div className="p-6 border-t border-brass-soft space-y-4">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs border border-slate-200">
-              <UserIcon className="h-4 w-4 text-slate-500" />
+            <div className="h-9 w-9 rounded-full bg-white/5 flex items-center justify-center text-paper font-bold text-xs border border-brass-soft">
+              <UserIcon className="h-4 w-4 text-brass" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-slate-900 truncate">{user?.name || 'Carlos Silva'}</p>
-              <p className="text-[10px] text-slate-500 font-semibold truncate uppercase">
+              <p className="text-sm font-bold text-paper truncate">{user?.name || 'Carlos Silva'}</p>
+              <p className="text-[10px] text-paper/50 font-semibold truncate uppercase font-mono">
                 {user?.role === 'super_admin' ? 'SaaS Owner' : (company?.name || 'Studio')}
               </p>
             </div>
@@ -454,7 +454,7 @@ export default function App() {
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 py-2 px-3 text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-50 hover:bg-red-50 hover:border-red-100 border border-transparent rounded-xl transition cursor-pointer"
+            className="w-full flex items-center gap-2 py-2 px-3 text-xs font-semibold text-paper/70 hover:text-paper bg-white/5 hover:bg-wine/40 border border-transparent rounded-lg transition cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             <span>Sair do Sistema</span>
@@ -465,9 +465,9 @@ export default function App() {
       {/* MAIN CONTAINER WORKSPACE */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* DESKTOP TOP BAR HELPER (Visible on md+) */}
-        <header className="hidden md:flex bg-white border-b border-slate-200 py-3.5 px-8 items-center justify-between z-10">
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-1.5">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+        <header className="hidden md:flex bg-paper border-b border-ink/10 py-3.5 px-8 items-center justify-between z-10">
+          <span className="text-xs font-bold text-ink-dim uppercase tracking-widest flex items-center gap-1.5 font-mono">
+            <CheckCircle className="h-3.5 w-3.5 text-ok" />
             {user?.role === 'super_admin' ? 'Painel de Controle Master' : `Tenant: ${company?.name || 'CM Studio'}`}
           </span>
 
@@ -477,11 +477,11 @@ export default function App() {
               <div className="relative">
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-2 text-slate-500 hover:text-slate-950 hover:bg-slate-50 rounded-xl transition cursor-pointer"
+                  className="p-2 text-ink-dim hover:text-ink hover:bg-card rounded-lg transition cursor-pointer"
                 >
                   <Bell className="h-4.5 w-4.5" />
                   {notificationsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-indigo-600 rounded-full animate-pulse"></span>
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-wine rounded-full animate-pulse"></span>
                   )}
                 </button>
                 {notificationDropdown}
@@ -489,8 +489,8 @@ export default function App() {
             )}
 
             {/* Profile Pill */}
-            <div className="flex items-center gap-2.5 pl-4 border-l border-slate-200 text-sm font-semibold text-slate-800">
-              <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full"></span>
+            <div className="flex items-center gap-2.5 pl-4 border-l border-ink/10 text-sm font-semibold text-ink">
+              <span className="h-1.5 w-1.5 bg-ok rounded-full"></span>
               <span>{user?.name || 'Carlos Silva'}</span>
             </div>
           </div>

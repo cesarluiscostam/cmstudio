@@ -32,7 +32,7 @@ async function seedIfEmpty() {
   const hash = (plain: string) => bcrypt.hashSync(plain, 10);
 
   const companies = [
-    { id: 'comp-1', name: 'CM Studio', slug: 'barberflow', phone: '(11) 99999-1234', address: 'Av. Paulista, 1000 - Bela Vista, São Paulo - SP', instagram: '@cmstudio', businessType: 'barbershop', primaryColor: '#4f46e5', secondaryColor: '#312e81', subscriptionFee: 149.90 },
+    { id: 'comp-1', name: 'CM Studio', slug: 'barberflow', phone: '(11) 99999-1234', address: 'Av. Paulista, 1000 - Bela Vista, São Paulo - SP', instagram: '@cmstudio', businessType: 'barbershop', primaryColor: '#ba8b3f', secondaryColor: '#6f2f40', subscriptionFee: 149.90 },
     { id: 'comp-2', name: 'Navalha & Bigode', slug: 'navalha-bigode', phone: '(11) 98888-4321', address: 'Rua Augusta, 450 - Consolação, São Paulo - SP', instagram: '@navalhabigode', businessType: 'barbershop', primaryColor: '#b45309', secondaryColor: '#78350f', subscriptionFee: 149.90 },
     { id: 'comp-3', name: 'Studio Bella - Salão & Estética', slug: 'studio-bella', phone: '(11) 97777-1111', address: 'Av. Brigadeiro Luís Antônio, 2200 - Jardins, São Paulo - SP', instagram: '@studio_bella_estetica', businessType: 'beauty_salon', primaryColor: '#db2777', secondaryColor: '#831843', subscriptionFee: 199.90 },
     { id: 'comp-4', name: 'Unhas de Fibra & Manicure Express', slug: 'unhas-de-fibra', phone: '(11) 96666-2222', address: 'Rua Pamplona, 120 - Jardim Paulista, São Paulo - SP', instagram: '@unhas_fibra_express', businessType: 'manicure', primaryColor: '#ec4899', secondaryColor: '#9d174d', subscriptionFee: 99.90 },
