@@ -301,8 +301,8 @@ export default function CaixaView({
           <div className="mt-4">
             <span className="text-2xl font-extrabold">R$ {netBalanceToday.toFixed(2)}</span>
             <div className="flex justify-between text-[10px] text-paper/50 mt-1">
-              <span>Incomes: +R${totalIncomesToday}</span>
-              <span>Expenses: -R${totalExpensesToday}</span>
+              <span>Entradas: +R${totalIncomesToday.toFixed(2)}</span>
+              <span>Saídas: -R${totalExpensesToday.toFixed(2)}</span>
             </div>
           </div>
         </div>

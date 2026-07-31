@@ -117,7 +117,7 @@ export default function TeamView({ currentUserId, refreshTrigger, onRefresh }: T
         <div className="bg-card rounded-xl border border-ink/10 shadow-sm overflow-hidden">
           <div className="p-4 border-b border-ink/10 bg-paper flex justify-between items-center">
             <span className="text-xs font-bold text-ink-dim tracking-wider uppercase">MEMBROS DA EQUIPE</span>
-            <span className="text-xs font-bold text-ink-dim">{team.length} pessoas</span>
+            <span className="text-xs font-bold text-ink-dim">{team.length} {team.length === 1 ? 'pessoa' : 'pessoas'}</span>
           </div>
           <div className="divide-y divide-ink/8">
             {team.map((member) => (
