@@ -468,7 +468,7 @@ export default function App() {
         <header className="hidden md:flex bg-paper border-b border-ink/10 py-3.5 px-8 items-center justify-between z-10">
           <span className="text-xs font-bold text-ink-dim uppercase tracking-widest flex items-center gap-1.5 font-mono">
             <CheckCircle className="h-3.5 w-3.5 text-ok" />
-            {user?.role === 'super_admin' ? 'Painel de Controle Master' : `Tenant: ${company?.name || 'CM Studio'}`}
+            {user?.role === 'super_admin' ? 'Painel de Controle Master' : (company?.name || 'CM Studio')}
           </span>
 
           <div className="flex items-center gap-4">
