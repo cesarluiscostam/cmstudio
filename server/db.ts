@@ -471,7 +471,29 @@ export const dbOperations = {
     return dbOperations.getAppointmentById(id);
   },
   deleteAppointment: async (id: string): Promise<boolean> => {
-    await pool.query('DELETE FROM appointments WHERE id = $1', [id]);
+    const apt = await dbOperations.getAppointmentById(id);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Completing an appointment auto-creates a linked income transaction and bumps the
+      // client's totals (see updateAppointment above) — reverse both, otherwise deleting a
+      // completed appointment leaves a phantom entry in the cash flow and inflated client stats.
+      if (apt && apt.status === 'completed') {
+        await client.query(
+          `UPDATE clients SET total_spent = GREATEST(0, total_spent - $2), visits_count = GREATEST(0, visits_count - 1) WHERE id = $1`,
+          [apt.clientId, apt.totalPrice]
+        );
+      }
+      await client.query('DELETE FROM transactions WHERE appointment_id = $1', [id]);
+      await client.query('DELETE FROM notifications WHERE appointment_id = $1', [id]);
+      await client.query('DELETE FROM appointments WHERE id = $1', [id]);
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
     return true;
   },
 

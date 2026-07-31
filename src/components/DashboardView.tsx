@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { Company, User } from '../types';
 import {
   Calendar,
   DollarSign,
@@ -36,7 +37,8 @@ import {
 } from 'recharts';
 
 interface DashboardViewProps {
-  company: { primaryColor?: string; secondaryColor?: string } | null;
+  company: Company | null;
+  user: User | null;
   onNavigate: (tab: string) => void;
   onOpenNewAppointment: () => void;
   onOpenNewClient: () => void;
@@ -46,6 +48,7 @@ interface DashboardViewProps {
 
 export default function DashboardView({
   company,
+  user,
   onNavigate,
   onOpenNewAppointment,
   onOpenNewClient,
@@ -113,10 +116,10 @@ export default function DashboardView({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-semibold text-ink tracking-tight">
-            Olá, Carlos Silva
+            Olá, {user?.name?.split(' ')[0] || 'Bem-vindo(a)'}
           </h1>
           <p className="text-sm text-ink-dim">
-            Painel Geral da Barbearia • {(() => {
+            Painel Geral {company?.name ? `• ${company.name}` : ''} • {(() => {
               const formatted = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
               return formatted.charAt(0).toUpperCase() + formatted.slice(1);
             })()}

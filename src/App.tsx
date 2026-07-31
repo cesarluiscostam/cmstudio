@@ -505,6 +505,7 @@ export default function App() {
           {activeTab === 'dashboard' && (
             <DashboardView
               company={company}
+              user={user}
               onNavigate={setActiveTab}
               onOpenNewAppointment={handleOpenNewAppointment}
               onOpenNewClient={handleOpenNewClient}
