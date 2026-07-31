@@ -261,6 +261,7 @@ app.get('/api/dashboard-stats', ah(async (req, res) => {
   const { companyId } = getTenant(req);
   const appointments = await dbOperations.getAppointments(companyId);
   const transactions = await dbOperations.getTransactions(companyId);
+  const clients = await dbOperations.getClients(companyId);
 
   const todayStr = getTodayStr();
   const currentMonthPrefix = todayStr.substring(0, 7); // 'YYYY-MM'
@@ -331,6 +332,24 @@ app.get('/api/dashboard-stats', ah(async (req, res) => {
     });
   const busyDaysChart = Object.entries(busyDaysMap).map(([name, count]) => ({ name, count }));
 
+  // Clientes que já vieram pelo menos uma vez mas não voltam há 30+ dias — ordenados do mais tempo sumido pro mais recente
+  const INACTIVE_DAYS_THRESHOLD = 30;
+  const inactiveClients = clients
+    .filter(c => c.lastVisitAt)
+    .map(c => ({
+      ...c,
+      daysSinceVisit: Math.floor((todayDateObj.getTime() - new Date(c.lastVisitAt as string).getTime()) / (1000 * 60 * 60 * 24))
+    }))
+    .filter(c => c.daysSinceVisit >= INACTIVE_DAYS_THRESHOLD)
+    .sort((a, b) => b.daysSinceVisit - a.daysSinceVisit)
+    .slice(0, 5)
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      daysSinceVisit: c.daysSinceVisit
+    }));
+
   res.json({
     stats: {
       appointmentsToday: confirmedToday + completedToday + pendingToday,
@@ -342,7 +361,8 @@ app.get('/api/dashboard-stats', ah(async (req, res) => {
       clientsServicedToday,
       ticketAverage,
       cashBalance,
-      nextClient: nextClientApt
+      nextClient: nextClientApt,
+      inactiveClients
     },
     charts: {
       revenueChart,

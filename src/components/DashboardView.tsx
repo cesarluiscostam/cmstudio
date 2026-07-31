@@ -20,7 +20,8 @@ import {
   ChevronRight,
   MinusCircle,
   Activity,
-  Sparkles
+  Sparkles,
+  UserX
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -429,6 +430,49 @@ export default function DashboardView({
                 >
                   Agendar agora <Plus className="h-3 w-3" />
                 </button>
+              </div>
+            )}
+          </div>
+
+          {/* Inactive Clients */}
+          <div className="bg-card p-6 rounded-[18px_6px_18px_6px] border border-ink/8 shadow-sm">
+            <h3 className="text-sm font-semibold text-ink mb-4 flex items-center gap-1.5">
+              <UserX className="h-4 w-4 text-brand-primary" /> Clientes Inativos
+            </h3>
+
+            {stats.inactiveClients && stats.inactiveClients.length > 0 ? (
+              <div className="space-y-3">
+                {stats.inactiveClients.map((c: any) => (
+                  <div key={c.id} className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="h-8 w-8 shrink-0 rounded-full bg-paper text-ink-dim flex items-center justify-center font-semibold text-xs">
+                        {c.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-ink truncate">{c.name}</p>
+                        <p className="text-[11px] text-ink-dim truncate">{c.phone}</p>
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-[10px] font-bold text-bad bg-bad/10 px-2 py-1 rounded-full whitespace-nowrap">
+                      {c.daysSinceVisit}d sumido
+                    </span>
+                  </div>
+                ))}
+                <button
+                  onClick={() => onNavigate('clientes')}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-card border border-ink/10 text-ink rounded-lg text-xs font-semibold hover:bg-paper transition cursor-pointer mt-1"
+                >
+                  Ver todos os clientes <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="py-6 text-center space-y-2">
+                <div className="h-10 w-10 bg-paper text-ink-dim rounded-full flex items-center justify-center mx-auto">
+                  <UserX className="h-5 w-5" />
+                </div>
+                <p className="text-xs text-ink-dim font-medium">
+                  Nenhum cliente inativo há 30+ dias.
+                </p>
               </div>
             )}
           </div>
