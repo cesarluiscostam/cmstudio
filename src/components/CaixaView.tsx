@@ -290,12 +290,16 @@ export default function CaixaView({
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-        {!isCurrentMonth && (
+        {isCurrentMonth ? (
+          <span className="text-[10px] font-bold text-ok bg-ok/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+            Mês Atual
+          </span>
+        ) : (
           <button
             onClick={() => setSelectedMonthStr(todayStr.substring(0, 7))}
             className="text-xs font-bold text-brand-primary hover:underline cursor-pointer"
           >
-            Mês Atual
+            Voltar ao Mês Atual
           </button>
         )}
       </div>
