@@ -23,7 +23,9 @@ import {
   Info,
   Clock,
   Edit2,
-  Package
+  Package,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface CaixaViewProps {
@@ -55,6 +57,7 @@ export default function CaixaView({
   useEscapeKey(() => setShowProductsModal(false), showProductsModal);
   useEscapeKey(() => setShowProductFormModal(false), showProductFormModal);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
+  const [selectedMonthStr, setSelectedMonthStr] = useState(getTodayStr().substring(0, 7)); // 'YYYY-MM'
 
   // Product Form
   const [prodName, setProdName] = useState('');
@@ -218,18 +221,27 @@ export default function CaixaView({
 
   // Financial Statistics
   const todayStr = getTodayStr();
-  const currentMonthStr = todayStr.substring(0, 7); // 'YYYY-MM'
-  const currentMonthName = new Date(`${todayStr}T00:00:00`).toLocaleDateString('pt-BR', { month: 'long' });
-  const currentMonthLabel = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1) + '/' + todayStr.substring(0, 4);
+
+  // Month being viewed in the "Mês" cards and the extrato below — independent from "today",
+  // which the Saldo do Dia card always tracks regardless of which month is selected.
+  const selectedMonthName = new Date(`${selectedMonthStr}-01T00:00:00`).toLocaleDateString('pt-BR', { month: 'long' });
+  const selectedMonthLabel = selectedMonthName.charAt(0).toUpperCase() + selectedMonthName.slice(1) + '/' + selectedMonthStr.substring(0, 4);
+  const isCurrentMonth = selectedMonthStr === todayStr.substring(0, 7);
+
+  const shiftSelectedMonth = (delta: number) => {
+    const [y, m] = selectedMonthStr.split('-').map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    setSelectedMonthStr(`${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`);
+  };
 
   // Entradas do Mês
   const totalIncomesMonth = transactions
-    .filter(t => t.type === 'income' && t.date.startsWith(currentMonthStr))
+    .filter(t => t.type === 'income' && t.date.startsWith(selectedMonthStr))
     .reduce((sum, t) => sum + t.amount, 0);
 
   // Saídas do Mês
   const totalExpensesMonth = transactions
-    .filter(t => t.type === 'expense' && t.date.startsWith(currentMonthStr))
+    .filter(t => t.type === 'expense' && t.date.startsWith(selectedMonthStr))
     .reduce((sum, t) => sum + t.amount, 0);
 
   // Saldo Líquido do Mês
@@ -250,6 +262,7 @@ export default function CaixaView({
 
   // Filter transactions for listing
   const filteredTransactions = transactions
+    .filter(t => t.date.startsWith(selectedMonthStr))
     .filter(t => {
       if (filterType === 'all') return true;
       return t.type === filterType;
@@ -258,6 +271,35 @@ export default function CaixaView({
 
   return (
     <div className="space-y-6">
+      {/* Month/Year Navigator */}
+      <div className="flex items-center justify-between gap-3 bg-card p-3 rounded-xl border border-ink/10 shadow-sm">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => shiftSelectedMonth(-1)}
+            className="p-1.5 rounded-lg border border-ink/10 text-ink-dim hover:text-ink hover:bg-paper transition cursor-pointer"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="text-sm font-bold text-ink font-display min-w-[130px] text-center">
+            {selectedMonthLabel}
+          </span>
+          <button
+            onClick={() => shiftSelectedMonth(1)}
+            className="p-1.5 rounded-lg border border-ink/10 text-ink-dim hover:text-ink hover:bg-paper transition cursor-pointer"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+        {!isCurrentMonth && (
+          <button
+            onClick={() => setSelectedMonthStr(todayStr.substring(0, 7))}
+            className="text-xs font-bold text-brand-primary hover:underline cursor-pointer"
+          >
+            Mês Atual
+          </button>
+        )}
+      </div>
+
       {/* Balances Bento Grid Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Entradas do Mês */}
@@ -268,7 +310,7 @@ export default function CaixaView({
           </div>
           <div className="mt-4">
             <span className="text-2xl font-extrabold text-emerald-600">R$ {totalIncomesMonth.toFixed(2)}</span>
-            <p className="text-[10px] text-ink-dim mt-1">Total acumulado em {currentMonthName}</p>
+            <p className="text-[10px] text-ink-dim mt-1">Total acumulado em {selectedMonthName}</p>
           </div>
         </div>
 
@@ -280,7 +322,7 @@ export default function CaixaView({
           </div>
           <div className="mt-4">
             <span className="text-2xl font-extrabold text-red-600">R$ {totalExpensesMonth.toFixed(2)}</span>
-            <p className="text-[10px] text-ink-dim mt-1">Aluguel, contas e comissões</p>
+            <p className="text-[10px] text-ink-dim mt-1">Total acumulado em {selectedMonthName}</p>
           </div>
         </div>
 
@@ -294,7 +336,7 @@ export default function CaixaView({
             <span className={`text-2xl font-extrabold ${netBalanceMonth >= 0 ? 'text-ink' : 'text-red-700'}`}>
               R$ {netBalanceMonth.toFixed(2)}
             </span>
-            <p className="text-[10px] text-ink-dim mt-1">Resultado de {currentMonthLabel}</p>
+            <p className="text-[10px] text-ink-dim mt-1">Resultado de {selectedMonthLabel}</p>
           </div>
         </div>
 
