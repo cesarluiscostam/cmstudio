@@ -213,7 +213,7 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6">
       {/* 1. Public Scheduling Hub Card */}
       <div className="bg-rail text-paper p-6 rounded-[22px_8px_22px_8px] border border-brass-soft shadow-sm space-y-4">
         <div className="flex items-start justify-between">
