@@ -108,6 +108,7 @@ function mapAppointment(row: any): Appointment {
     totalDurationMin: row.total_duration_min,
     status: row.status,
     notes: row.notes ?? undefined,
+    reminderSent: row.reminder_sent,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
   };
 }
@@ -438,12 +439,15 @@ export const dbOperations = {
     if (!oldApt) return null;
     const newApt = { ...oldApt, ...updated };
 
+    // Rescheduling a confirmed appointment should re-arm the 1h-before SMS reminder for the new time.
+    const reminderSent = (newApt.date !== oldApt.date || newApt.time !== oldApt.time) ? false : oldApt.reminderSent ?? false;
+
     await pool.query(
       `UPDATE appointments SET client_id=$2, client_name=$3, client_phone=$4, date=$5, time=$6, service_ids=$7, service_names=$8,
-         total_price=$9, total_duration_min=$10, status=$11, notes=$12 WHERE id=$1`,
+         total_price=$9, total_duration_min=$10, status=$11, notes=$12, reminder_sent=$13 WHERE id=$1`,
       [id, newApt.clientId, newApt.clientName, newApt.clientPhone, newApt.date, newApt.time,
        JSON.stringify(newApt.serviceIds), JSON.stringify(newApt.serviceNames), newApt.totalPrice,
-       newApt.totalDurationMin, newApt.status, newApt.notes ?? null]
+       newApt.totalDurationMin, newApt.status, newApt.notes ?? null, reminderSent]
     );
 
     if (oldApt.status !== 'completed' && newApt.status === 'completed') {
@@ -495,6 +499,18 @@ export const dbOperations = {
       client.release();
     }
     return true;
+  },
+  // Platform-wide (not scoped to one company) — feeds the background job that sends the
+  // 1h-before SMS reminder. `fromDateStr` narrows to today-or-later so it doesn't rescan history.
+  getAppointmentsNeedingReminderCheck: async (fromDateStr: string): Promise<Appointment[]> => {
+    const { rows } = await pool.query(
+      `SELECT * FROM appointments WHERE status = 'confirmed' AND reminder_sent = false AND date >= $1`,
+      [fromDateStr]
+    );
+    return rows.map(mapAppointment);
+  },
+  markReminderSent: async (id: string): Promise<void> => {
+    await pool.query('UPDATE appointments SET reminder_sent = true WHERE id = $1', [id]);
   },
 
   // Transactions / Cash Flow

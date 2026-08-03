@@ -70,6 +70,7 @@ export interface Appointment {
   totalDurationMin: number;
   status: AppointmentStatus;
   notes?: string;
+  reminderSent?: boolean;
   createdAt: string;
 }
 

@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- Added after the initial release — ADD COLUMN IF NOT EXISTS keeps this safe to re-run
 -- against a database created before this column existed.
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS cover_photo_url TEXT;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN NOT NULL DEFAULT false;
 
 CREATE INDEX IF NOT EXISTS idx_users_company ON users(company_id);
 CREATE INDEX IF NOT EXISTS idx_services_company ON services(company_id);

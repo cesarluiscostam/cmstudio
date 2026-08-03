@@ -15,6 +15,7 @@ import { getTodayStr } from './src/lib/date';
 import { hasTimeConflict, generateAvailableSlots, isWorkDay } from './src/lib/scheduling';
 import { validateBody, validateQuery, schemas } from './server/validation';
 import { uploadLogo, uploadCoverPhoto, UPLOADS_DIR } from './server/upload';
+import { sendSms } from './server/sms';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -35,6 +36,23 @@ function ah(fn: (req: express.Request, res: express.Response) => Promise<any>) {
 // Tenant identity now comes from the verified JWT (set by requireAuth), never from client-supplied headers.
 function getTenant(req: express.Request) {
   return { companyId: req.auth!.companyId, userId: req.auth!.userId };
+}
+
+// SMS copy helpers — shared by the public booking flow, the internal booking flow, and the reminder job below.
+function formatApptDateBR(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00-03:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+function buildBookingSms(companyName: string, apt: Appointment): string {
+  const when = `${formatApptDateBR(apt.date)} às ${apt.time}`;
+  const services = apt.serviceNames.join(', ');
+  return apt.status === 'pending'
+    ? `${companyName}: recebemos seu pedido de agendamento para ${when} (${services}). Em breve confirmamos!`
+    : `${companyName}: seu agendamento para ${when} (${services}) está confirmado!`;
+}
+
+function buildReminderSms(companyName: string, apt: Appointment): string {
+  return `${companyName}: lembrete! Seu horário é hoje às ${apt.time} (${apt.serviceNames.join(', ')}). Te esperamos!`;
 }
 
 // ==========================================
@@ -135,6 +153,9 @@ app.post('/api/public/booking', validateBody(schemas.publicBooking), ah(async (r
     notes,
     createdAt: new Date().toISOString()
   });
+
+  const company = await dbOperations.getCompanyById(companyId);
+  await sendSms(apt.clientPhone, buildBookingSms(company?.name || 'CM Studio', apt));
 
   res.status(201).json({ appointment: apt, message: 'Agendamento solicitado com sucesso!' });
 }));
@@ -421,6 +442,9 @@ app.post('/api/appointments', validateBody(schemas.createAppointment), ah(async 
     notes,
     createdAt: new Date().toISOString()
   });
+
+  const company = await dbOperations.getCompanyById(companyId);
+  await sendSms(apt.clientPhone, buildBookingSms(company?.name || 'CM Studio', apt));
 
   res.status(201).json(apt);
 }));
@@ -971,6 +995,32 @@ app.delete('/api/team/:id', ah(async (req, res) => {
 }));
 
 // ==========================================
+// SMS REMINDER BACKGROUND JOB
+// ==========================================
+
+const REMINDER_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+
+// Polls confirmed appointments starting in ~1h and texts a reminder once per appointment.
+// São Paulo has been UTC-3 year-round since 2019 (no DST), so the offset below is safe to hardcode.
+async function checkAndSendReminders() {
+  try {
+    const candidates = await dbOperations.getAppointmentsNeedingReminderCheck(getTodayStr());
+    const now = Date.now();
+    for (const apt of candidates) {
+      const aptMoment = new Date(`${apt.date}T${apt.time}:00-03:00`).getTime();
+      const minutesUntil = (aptMoment - now) / 60000;
+      if (minutesUntil <= 65 && minutesUntil >= 50) {
+        const company = await dbOperations.getCompanyById(apt.companyId);
+        await sendSms(apt.clientPhone, buildReminderSms(company?.name || 'CM Studio', apt));
+        await dbOperations.markReminderSent(apt.id);
+      }
+    }
+  } catch (err) {
+    console.error('[reminder] Erro ao verificar lembretes:', err);
+  }
+}
+
+// ==========================================
 // VITE CLIENT INTEGRATION
 // ==========================================
 
@@ -991,6 +1041,8 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
+    checkAndSendReminders();
+    setInterval(checkAndSendReminders, REMINDER_CHECK_INTERVAL_MS);
   });
 }
 
