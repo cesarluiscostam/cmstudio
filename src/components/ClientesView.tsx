@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useToast, useConfirm } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Client, Appointment } from '../types';
 import {
   Users,
@@ -37,6 +38,9 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+  useEscapeKey(() => setShowAddModal(false), showAddModal);
+  useEscapeKey(() => setShowEditModal(false), showEditModal);
 
   // Form Fields
   const [name, setName] = useState('');
@@ -328,9 +332,13 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
 
       {/* MODAL: Register Client Dialog */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowAddModal(false)}
+        >
           <form
             onSubmit={handleCreateClient}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
@@ -412,9 +420,13 @@ export default function ClientesView({ refreshTrigger, onRefresh }: ClientesView
 
       {/* MODAL: Edit Client Dialog */}
       {showEditModal && selectedClient && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowEditModal(false)}
+        >
           <form
             onSubmit={handleUpdateClient}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">

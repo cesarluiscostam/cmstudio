@@ -3,22 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { api } from './lib/api';
 import { Company, User } from './types';
 
-// Import Views
+// Login is the very first thing anyone sees, so it stays a static import — no spinner-before-spinner.
+// Every other view is only needed after auth or navigation, so each is its own chunk loaded on demand
+// (this is what keeps recharts, used only by Dashboard/SaaS admin, out of the initial bundle).
 import LoginView from './components/LoginView';
-import RegisterView from './components/RegisterView';
-import DashboardView from './components/DashboardView';
-import AgendaView from './components/AgendaView';
-import ClientesView from './components/ClientesView';
-import ServicosView from './components/ServicosView';
-import CaixaView from './components/CaixaView';
-import TeamView from './components/TeamView';
-import ConfiguracoesView from './components/ConfiguracoesView';
-import PublicBookingView from './components/PublicBookingView';
-import SaaSAdminView from './components/SaaSAdminView';
+const RegisterView = lazy(() => import('./components/RegisterView'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
+const AgendaView = lazy(() => import('./components/AgendaView'));
+const ClientesView = lazy(() => import('./components/ClientesView'));
+const ServicosView = lazy(() => import('./components/ServicosView'));
+const CaixaView = lazy(() => import('./components/CaixaView'));
+const TeamView = lazy(() => import('./components/TeamView'));
+const ConfiguracoesView = lazy(() => import('./components/ConfiguracoesView'));
+const PublicBookingView = lazy(() => import('./components/PublicBookingView'));
+const SaaSAdminView = lazy(() => import('./components/SaaSAdminView'));
 
 // Icons
 import {
@@ -39,6 +41,15 @@ import {
   Globe,
   UserCog
 } from 'lucide-react';
+
+// Shared fallback for lazy-loaded views — brief enough that it barely flashes on a warm cache.
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
 export default function App() {
   // Session State
@@ -61,6 +72,10 @@ export default function App() {
 
   // Mobile sidebar layout toggler
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Two refs: the bell lives in different markup for mobile vs desktop headers (only one
+  // is visible at a time via CSS), so outside-click detection has to check both.
+  const mobileNotificationsRef = useRef<HTMLDivElement>(null);
+  const desktopNotificationsRef = useRef<HTMLDivElement>(null);
 
   // Real-time synchronization trigger
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -85,6 +100,28 @@ export default function App() {
   const triggerRefresh = () => {
     setRefreshTrigger(prev => prev + 1);
   };
+
+  // Close the notifications tray on outside click or Escape, like any dropdown should.
+  useEffect(() => {
+    if (!showNotifications) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const insideMobile = mobileNotificationsRef.current?.contains(target);
+      const insideDesktop = desktopNotificationsRef.current?.contains(target);
+      if (!insideMobile && !insideDesktop) {
+        setShowNotifications(false);
+      }
+    };
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowNotifications(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showNotifications]);
 
   // 1. Detect public booking URL hash on mount and changes
   // Format supported: #/agendar/slug or #/booking/slug
@@ -249,10 +286,12 @@ export default function App() {
   // RENDER SEPARATOR
   if (route === 'public-booking') {
     return (
-      <PublicBookingView
-        slug={publicSlug}
-        onBackToAdmin={publicBookingFromBackoffice ? () => setRoute('backoffice') : undefined}
-      />
+      <Suspense fallback={<PageLoader />}>
+        <PublicBookingView
+          slug={publicSlug}
+          onBackToAdmin={publicBookingFromBackoffice ? () => setRoute('backoffice') : undefined}
+        />
+      </Suspense>
     );
   }
 
@@ -267,10 +306,12 @@ export default function App() {
 
   if (route === 'register') {
     return (
-      <RegisterView
-        onSuccess={handleLoginSuccess}
-        onNavigateToLogin={() => setRoute('login')}
-      />
+      <Suspense fallback={<PageLoader />}>
+        <RegisterView
+          onSuccess={handleLoginSuccess}
+          onNavigateToLogin={() => setRoute('login')}
+        />
+      </Suspense>
     );
   }
 
@@ -346,7 +387,7 @@ export default function App() {
 
         <div className="flex items-center gap-3">
           {user?.role !== 'super_admin' && (
-            <div className="relative">
+            <div className="relative" ref={mobileNotificationsRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg relative transition"
@@ -371,9 +412,17 @@ export default function App() {
         </div>
       </div>
 
+      {/* Mobile menu backdrop — tap outside the sidebar to close it */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-20"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* BACKOFFICE SIDEBAR (Desktop & Mobile expanded) */}
       <aside
-        className={`bg-rail text-paper/80 w-full md:w-64 min-h-screen md:min-h-0 flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 overflow-y-auto md:self-start md:rounded-[22px_8px_22px_8px] md:shadow-[0_16px_34px_-18px_rgba(24,40,33,0.55)] ${mobileMenuOpen ? 'fixed inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
+        className={`bg-rail text-paper/80 w-full md:w-64 min-h-screen md:min-h-0 flex flex-col justify-between flex-shrink-0 z-30 transition-transform md:translate-x-0 overflow-y-auto md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:rounded-[22px_8px_22px_8px] md:shadow-[0_16px_34px_-18px_rgba(24,40,33,0.55)] ${mobileMenuOpen ? 'fixed inset-y-0 left-0 translate-x-0 shadow-2xl' : 'hidden md:flex'}`}
       >
         <div className="space-y-8 p-6">
           {/* Brand Logo Header */}
@@ -474,7 +523,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             {/* Notification alert Bell */}
             {user?.role !== 'super_admin' && (
-              <div className="relative">
+              <div className="relative" ref={desktopNotificationsRef}>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="p-2 text-ink-dim hover:text-ink hover:bg-card rounded-lg transition cursor-pointer"
@@ -498,6 +547,7 @@ export default function App() {
 
         {/* WORKSPACE VIEWS */}
         <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+        <Suspense fallback={<PageLoader />}>
           {activeTab === 'saas_dashboard' && (
             <SaaSAdminView onRefresh={triggerRefresh} refreshTrigger={refreshTrigger} />
           )}
@@ -563,6 +613,7 @@ export default function App() {
               onCompanyUpdate={handleCompanyUpdate}
             />
           )}
+        </Suspense>
         </div>
       </main>
     </div>

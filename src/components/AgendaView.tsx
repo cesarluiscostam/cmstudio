@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
 import { useToast, useConfirm } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Appointment, Client, Service, Company } from '../types';
 import {
   Calendar as CalendarIcon,
@@ -45,6 +46,10 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  useEscapeKey(() => setShowDetailModal(false), showDetailModal);
+  useEscapeKey(() => setShowEditModal(false), showEditModal);
+  useEscapeKey(() => setShowCreateModal(false), showCreateModal);
 
   // Edit fields
   const [editClient, setEditClient] = useState('');
@@ -525,8 +530,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 1: Appointment Details Popup */}
       {showDetailModal && selectedApt && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
-          <div className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-xl animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50"
+          onClick={() => setShowDetailModal(false)}
+        >
+          <div
+            className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-xl animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold text-ink">Gerenciar Atendimento</h3>
@@ -687,9 +698,13 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 2: Edit Appointment Dialog */}
       {showEditModal && selectedApt && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50"
+          onClick={() => setShowEditModal(false)}
+        >
           <form
             onSubmit={handleSaveEdit}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
           >
             <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
@@ -810,9 +825,13 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
 
       {/* MODAL 3: Create New Appointment Dialog */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50"
+          onClick={() => setShowCreateModal(false)}
+        >
           <form
             onSubmit={handleSaveCreate}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl animate-fade-in"
           >
             <div className="p-5 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">

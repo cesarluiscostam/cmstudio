@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useToast, useConfirm } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { User } from '../types';
 import {
   Plus,
@@ -24,6 +25,8 @@ export default function TeamView({ currentUserId, refreshTrigger, onRefresh }: T
   const [team, setTeam] = useState<Omit<User, 'password'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  useEscapeKey(() => setShowAddModal(false), showAddModal);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -158,9 +161,13 @@ export default function TeamView({ currentUserId, refreshTrigger, onRefresh }: T
 
       {/* MODAL: Add Team Member */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowAddModal(false)}
+        >
           <form
             onSubmit={handleCreateMember}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">

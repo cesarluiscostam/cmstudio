@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
 import { useToast, useConfirm } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { CashFlowTransaction, Product } from '../types';
 import {
   TrendingUp,
@@ -48,6 +49,11 @@ export default function CaixaView({
   const [showProductsModal, setShowProductsModal] = useState(false);
   const [showProductFormModal, setShowProductFormModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  useEscapeKey(() => setShowManualModal(false), showManualModal);
+  useEscapeKey(() => setShowSaleModal(false), showSaleModal);
+  useEscapeKey(() => setShowProductsModal(false), showProductsModal);
+  useEscapeKey(() => setShowProductFormModal(false), showProductFormModal);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
 
   // Product Form
@@ -444,9 +450,13 @@ export default function CaixaView({
 
       {/* MODAL 1: Add Manual Transaction */}
       {showManualModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowManualModal(false)}
+        >
           <form
             onSubmit={handleCreateTransaction}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
@@ -569,9 +579,13 @@ export default function CaixaView({
 
       {/* MODAL 2: Register Product Sale */}
       {showSaleModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowSaleModal(false)}
+        >
           <form
             onSubmit={handleCreateSale}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
@@ -684,8 +698,14 @@ export default function CaixaView({
 
       {/* MODAL 3: Manage Products (list) */}
       {showProductsModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
-          <div className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowProductsModal(false)}
+        >
+          <div
+            className="bg-card rounded-xl border border-ink/10 max-w-lg w-full overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">Gerenciar Produtos</h3>
               <button
@@ -743,9 +763,13 @@ export default function CaixaView({
 
       {/* MODAL 4: Add/Edit Product Form */}
       {showProductFormModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-[60] animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-[60] animate-fade-in"
+          onClick={() => setShowProductFormModal(false)}
+        >
           <form
             onSubmit={handleSaveProduct}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useToast } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Company } from '../types';
 import {
   Building2,
@@ -53,6 +54,10 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
   const [isDeleting, setIsDeleting] = useState(false);
   const [teamModalCompany, setTeamModalCompany] = useState<any | null>(null);
   const [resetResult, setResetResult] = useState<{ userId: string; tempPassword: string } | null>(null);
+
+  useEscapeKey(() => setIsModalOpen(false), isModalOpen);
+  useEscapeKey(() => { setTeamModalCompany(null); setResetResult(null); }, !!teamModalCompany);
+  useEscapeKey(() => setDeleteConfirmId(null), !!deleteConfirmId);
 
   // Form states
   const [formName, setFormName] = useState('');
@@ -527,8 +532,14 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
 
       {/* MODAL: Create / Edit Partner Business */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+        <div
+          className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-xl w-full overflow-hidden flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="p-6 border-b border-ink/8 flex items-center justify-between bg-paper">
               <div className="space-y-1">
@@ -751,8 +762,14 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
 
       {/* MODAL: Team & Password Reset */}
       {teamModalCompany && (
-        <div className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-lg w-full overflow-hidden">
+        <div
+          className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-50 overflow-y-auto"
+          onClick={() => { setTeamModalCompany(null); setResetResult(null); }}
+        >
+          <div
+            className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-lg w-full overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold text-ink">Equipe — {teamModalCompany.name}</h3>
@@ -810,8 +827,14 @@ export default function SaaSAdminView({ onRefresh, refreshTrigger }: SaaSAdminVi
 
       {/* MODAL: Delete Partner Business Confirmation */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-55 overflow-y-auto">
-          <div className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-md w-full overflow-hidden flex flex-col p-6 space-y-6">
+        <div
+          className="fixed inset-0 bg-ink/50 backdrop-blur-xs flex items-start justify-center p-4 z-55 overflow-y-auto"
+          onClick={() => setDeleteConfirmId(null)}
+        >
+          <div
+            className="bg-card rounded-2xl border border-ink/10 shadow-2xl max-w-md w-full overflow-hidden flex flex-col p-6 space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="space-y-2 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                 <Trash2 className="h-6 w-6 text-red-600" />

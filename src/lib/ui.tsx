@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { CheckCircle2, XCircle, X, AlertTriangle } from 'lucide-react';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 // ---------------------------------------------------------------------------
 // Toast notifications — replaces window.alert() across the app.
@@ -101,6 +102,8 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     state?.resolve(result);
     setState(null);
   };
+
+  useEscapeKey(() => handleClose(false), !!state);
 
   return (
     <ConfirmContext.Provider value={confirmFn}>

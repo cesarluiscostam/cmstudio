@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useToast, useConfirm } from '../lib/ui';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Service } from '../types';
 import {
   Scissors,
@@ -32,6 +33,9 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedSrv, setSelectedSrv] = useState<Service | null>(null);
+
+  useEscapeKey(() => setShowAddModal(false), showAddModal);
+  useEscapeKey(() => setShowEditModal(false), showEditModal);
 
   // Form Fields
   const [name, setName] = useState('');
@@ -232,9 +236,13 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
       {/* MODAL 1: Add Service */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowAddModal(false)}
+        >
           <form
             onSubmit={handleCreateService}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
@@ -325,9 +333,13 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
 
       {/* MODAL 2: Edit Service */}
       {showEditModal && selectedSrv && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowEditModal(false)}
+        >
           <form
             onSubmit={handleUpdateService}
+            onClick={(e) => e.stopPropagation()}
             className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
           >
             <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">

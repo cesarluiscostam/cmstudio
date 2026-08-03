@@ -306,10 +306,14 @@ app.get('/api/dashboard-stats', ah(async (req, res) => {
     .forEach(t => {
       dailyRevenueMap[t.date] += t.amount;
     });
+  // dailyRevenueMap keys were inserted in chronological order above (oldest to newest) and
+  // Object.entries preserves insertion order, so no re-sort here — sorting by the "DD/MM"
+  // display label instead of the real date breaks whenever the 15-day window crosses a month
+  // boundary (e.g. "01/08" sorts before "20/07" alphabetically, even though it's later).
   const revenueChart = Object.entries(dailyRevenueMap).map(([date, amount]) => ({
     date: date.substring(8, 10) + '/' + date.substring(5, 7),
     amount
-  })).sort((a, b) => a.date.localeCompare(b.date));
+  }));
 
   const servicesMap: Record<string, number> = {};
   appointments
