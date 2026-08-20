@@ -21,6 +21,7 @@ const TeamView = lazy(() => import('./components/TeamView'));
 const ConfiguracoesView = lazy(() => import('./components/ConfiguracoesView'));
 const PublicBookingView = lazy(() => import('./components/PublicBookingView'));
 const SaaSAdminView = lazy(() => import('./components/SaaSAdminView'));
+const TabletModeView = lazy(() => import('./components/TabletModeView'));
 
 // Icons
 import {
@@ -39,7 +40,8 @@ import {
   User as UserIcon,
   MessageSquare,
   Globe,
-  UserCog
+  UserCog,
+  Tablet
 } from 'lucide-react';
 
 // Shared fallback for lazy-loaded views — brief enough that it barely flashes on a warm cache.
@@ -58,7 +60,7 @@ export default function App() {
   const [token, setToken] = useState<string | null>(null);
 
   // Routing
-  const [route, setRoute] = useState<'login' | 'register' | 'backoffice' | 'public-booking'>('login');
+  const [route, setRoute] = useState<'login' | 'register' | 'backoffice' | 'public-booking' | 'tablet-mode'>('login');
   const [publicSlug, setPublicSlug] = useState<string>('');
   // Only true when navigating to the public booking preview from inside the backoffice —
   // a real customer opening a shared booking link has no admin panel to "go back" to.
@@ -295,6 +297,14 @@ export default function App() {
     );
   }
 
+  if (route === 'tablet-mode') {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <TabletModeView company={company} onExit={() => setRoute('backoffice')} />
+      </Suspense>
+    );
+  }
+
   if (route === 'login') {
     return (
       <LoginView
@@ -469,6 +479,20 @@ export default function App() {
               );
             })}
 
+            {/* Kiosk view for a counter tablet: next appointments + one-tap confirm/decline */}
+            {user?.role !== 'super_admin' && (
+              <button
+                onClick={() => {
+                  setRoute('tablet-mode');
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm font-bold text-brass hover:bg-white/5 transition cursor-pointer mt-4 border border-dashed border-brass-soft"
+              >
+                <Tablet className="h-4.5 w-4.5 flex-shrink-0 text-brass" />
+                <span>Modo Tablet</span>
+              </button>
+            )}
+
             {/* Direct Link to Portal do Cliente */}
             {user?.role !== 'super_admin' && (
               <button
@@ -478,7 +502,7 @@ export default function App() {
                   setRoute('public-booking');
                   setMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm font-bold text-brass hover:bg-white/5 transition cursor-pointer mt-4 border border-dashed border-brass-soft"
+                className="w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm font-bold text-brass hover:bg-white/5 transition cursor-pointer mt-2 border border-dashed border-brass-soft"
               >
                 <Globe className="h-4.5 w-4.5 flex-shrink-0 text-brass" />
                 <span>Ver Página do Cliente</span>
