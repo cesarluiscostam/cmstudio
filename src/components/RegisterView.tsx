@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { api } from '../lib/api';
+import { formatPhoneBR } from '../lib/phone';
 import { AlertCircle, ArrowLeft, Building, Sparkles } from 'lucide-react';
 
 interface RegisterViewProps {
@@ -113,7 +114,8 @@ export default function RegisterView({ onSuccess, onNavigateToLogin }: RegisterV
                   type="tel"
                   required
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(formatPhoneBR(e.target.value))}
+                  maxLength={15}
                   placeholder="Ex: (11) 99999-9999"
                   className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
                 />

@@ -87,4 +87,17 @@ describe('generateAvailableSlots', () => {
     expect(slots).not.toContain('11:00');
     expect(slots).toContain('09:00'); // 09:00 + 90min = 10:30, still within hours
   });
+
+  it('excludes slots earlier than minTimeStr, for filtering out already-passed times today', () => {
+    const slots = generateAvailableSlots(settings, [], undefined, '10:15');
+    expect(slots).not.toContain('09:00');
+    expect(slots).not.toContain('10:00');
+    expect(slots).toContain('10:30');
+    expect(slots).toContain('11:30');
+  });
+
+  it('does not filter by time when minTimeStr is omitted (e.g. a future date)', () => {
+    const slots = generateAvailableSlots(settings, []);
+    expect(slots).toContain('09:00');
+  });
 });

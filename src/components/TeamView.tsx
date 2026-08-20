@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useToast, useConfirm } from '../lib/ui';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { formatPhoneBR } from '../lib/phone';
 import { User } from '../types';
 import {
   Plus,
@@ -212,7 +213,8 @@ export default function TeamView({ currentUserId, refreshTrigger, onRefresh }: T
                   type="tel"
                   placeholder="Ex: (11) 99999-9999"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(formatPhoneBR(e.target.value))}
+                  maxLength={15}
                   className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>

@@ -42,11 +42,15 @@ export function isWorkDay(settings: Pick<CompanySettings, 'workDays'>, dateStr: 
 }
 
 // Generates every bookable slot for a day given business hours/lunch break, excluding slots where
-// a booking of `requestedDurationMin` would either overlap an existing appointment or run past closing time.
+// a booking of `requestedDurationMin` would either overlap an existing appointment or run past closing
+// time. Pass `minTimeStr` (current wall-clock "HH:MM") when the requested day is today, so slots that
+// have already gone by aren't offered — the caller decides this since this function has no notion of
+// "today" on its own.
 export function generateAvailableSlots(
   settings: Pick<CompanySettings, 'openTime' | 'closeTime' | 'lunchStart' | 'lunchEnd' | 'slotIntervalMin'>,
   bookedRanges: BookedRange[] = [],
-  requestedDurationMin?: number
+  requestedDurationMin?: number,
+  minTimeStr?: string
 ): string[] {
   const startMins = timeToMinutes(settings.openTime);
   const endMins = timeToMinutes(settings.closeTime);
@@ -65,5 +69,7 @@ export function generateAvailableSlots(
     slots.push(minutesToTime(m));
   }
 
-  return slots.filter(slot => !hasTimeConflict(bookedRanges, slot, duration));
+  return slots
+    .filter(slot => !minTimeStr || slot >= minTimeStr)
+    .filter(slot => !hasTimeConflict(bookedRanges, slot, duration));
 }

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
+import { formatPhoneBR } from '../lib/phone';
 import { useToast } from '../lib/ui';
 import { Service, Company, CompanySettings } from '../types';
 import {
@@ -509,7 +510,8 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
                     required
                     placeholder="Ex: (11) 99999-9999"
                     value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onChange={(e) => setCustomerPhone(formatPhoneBR(e.target.value))}
+                    maxLength={15}
                     className="w-full border border-ink/10 pl-9 pr-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>

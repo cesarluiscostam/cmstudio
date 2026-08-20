@@ -38,6 +38,13 @@ function getTenant(req: express.Request) {
   return { companyId: req.auth!.companyId, userId: req.auth!.userId };
 }
 
+// Current wall-clock time in São Paulo as "HH:MM" — computed via a fixed UTC-3 shift (Brazil dropped
+// DST in 2019) so it's correct regardless of the server process's own local timezone (Railway runs UTC).
+function currentTimeStrBR(): string {
+  const spTime = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  return `${String(spTime.getUTCHours()).padStart(2, '0')}:${String(spTime.getUTCMinutes()).padStart(2, '0')}`;
+}
+
 // SMS copy helpers — shared by the public booking flow, the internal booking flow, and the reminder job below.
 function formatApptDateBR(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00-03:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
@@ -94,7 +101,9 @@ app.get('/api/public/company/:slug/availability', validateQuery(schemas.availabi
     .filter(a => a.date === date && a.status !== 'cancelled')
     .map(a => ({ time: a.time, totalDurationMin: a.totalDurationMin }));
 
-  const slots = generateAvailableSlots(settings, bookedRanges, durationMin);
+  // Only exclude past times when browsing today — a future date has no "already passed" slots.
+  const minTimeStr = date === getTodayStr() ? currentTimeStrBR() : undefined;
+  const slots = generateAvailableSlots(settings, bookedRanges, durationMin, minTimeStr);
   res.json({ slots });
 }));
 
