@@ -57,11 +57,15 @@ describe('generateAvailableSlots', () => {
     closeTime: '12:00',
     lunchStart: undefined,
     lunchEnd: undefined,
-    slotIntervalMin: 30,
   };
 
-  it('generates every interval slot within business hours when nothing is booked', () => {
+  it('defaults to 30-minute steps when no service duration is given', () => {
     expect(generateAvailableSlots(settings, [])).toEqual(['09:00', '09:30', '10:00', '10:30', '11:00', '11:30']);
+  });
+
+  it('steps by the requested service duration instead of a fixed interval', () => {
+    // 90-minute steps from 09:00: 09:00, 10:30 (next would be 12:00, which leaves no room to finish by close)
+    expect(generateAvailableSlots(settings, [], 90)).toEqual(['09:00', '10:30']);
   });
 
   it('excludes slots that overlap an existing booking', () => {
@@ -81,11 +85,17 @@ describe('generateAvailableSlots', () => {
     expect(slots).toContain('11:00');
   });
 
+  it('excludes a slot that would run into lunch even if it starts before lunch begins', () => {
+    // A 40-minute service at 10:20 would run until 11:00, bleeding into a 10:30-11:30 lunch —
+    // the old fixed-grid version only checked whether a slot's *start* fell inside lunch.
+    const withLunch = { ...settings, lunchStart: '10:30', lunchEnd: '11:30' };
+    const slots = generateAvailableSlots(withLunch, [], 40);
+    expect(slots).toEqual(['09:00', '09:40']);
+  });
+
   it('never offers a slot whose requested duration would run past closing time', () => {
-    // 90-minute service starting at 11:00 would end at 12:30, past the 12:00 close.
     const slots = generateAvailableSlots(settings, [], 90);
-    expect(slots).not.toContain('11:00');
-    expect(slots).toContain('09:00'); // 09:00 + 90min = 10:30, still within hours
+    expect(slots).not.toContain('11:00'); // would end at 12:30, past the 12:00 close
   });
 
   it('excludes slots earlier than minTimeStr, for filtering out already-passed times today', () => {

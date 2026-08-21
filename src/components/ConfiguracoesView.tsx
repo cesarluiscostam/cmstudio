@@ -50,7 +50,6 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
   const [closeTime, setCloseTime] = useState('19:00');
   const [lunchStart, setLunchStart] = useState('12:00');
   const [lunchEnd, setLunchEnd] = useState('13:00');
-  const [slotIntervalMin, setSlotIntervalMin] = useState(30);
   const [allowOnlineBooking, setAllowOnlineBooking] = useState(true);
 
   // Shop Profile info (company table) - now fully editable for Managers/Admins
@@ -89,7 +88,6 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
         setCloseTime(data.closeTime);
         setLunchStart(data.lunchStart || '');
         setLunchEnd(data.lunchEnd || '');
-        setSlotIntervalMin(data.slotIntervalMin);
         setAllowOnlineBooking(data.allowOnlineBooking);
       }
     } catch (err) {
@@ -147,7 +145,6 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
         closeTime,
         lunchStart,
         lunchEnd,
-        slotIntervalMin,
         allowOnlineBooking
       });
 
@@ -557,34 +554,18 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
               </div>
             </div>
 
-            {/* Slot interval and toggle */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-ink/10 pt-4">
-              <div>
-                <label className="block text-xs font-bold text-ink-dim mb-1">INTERVALO ENTRE AGENDAMENTOS</label>
-                <select
-                  value={slotIntervalMin}
-                  onChange={(e) => setSlotIntervalMin(Number(e.target.value))}
-                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
-                >
-                  <option value={15}>15 minutos</option>
-                  <option value={30}>30 minutos</option>
-                  <option value={45}>45 minutos</option>
-                  <option value={60}>1 hora (60 min)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-ink-dim mb-2">AGENDAMENTO ONLINE ATIVO</label>
-                <label className="flex items-center gap-2.5 cursor-pointer mt-1">
-                  <input
-                    type="checkbox"
-                    checked={allowOnlineBooking}
-                    onChange={(e) => setAllowOnlineBooking(e.target.checked)}
-                    className="rounded accent-brand-primary focus:ring-brand-primary h-4 w-4"
-                  />
-                  <span className="text-xs font-semibold text-ink-dim">Permitir auto-agendamento</span>
-                </label>
-              </div>
+            {/* Online booking toggle */}
+            <div className="border-t border-ink/10 pt-4">
+              <label className="block text-xs font-bold text-ink-dim mb-2">AGENDAMENTO ONLINE ATIVO</label>
+              <label className="flex items-center gap-2.5 cursor-pointer mt-1">
+                <input
+                  type="checkbox"
+                  checked={allowOnlineBooking}
+                  onChange={(e) => setAllowOnlineBooking(e.target.checked)}
+                  className="rounded accent-brand-primary focus:ring-brand-primary h-4 w-4"
+                />
+                <span className="text-xs font-semibold text-ink-dim">Permitir auto-agendamento</span>
+              </label>
             </div>
 
             <div className="flex justify-end pt-2">
