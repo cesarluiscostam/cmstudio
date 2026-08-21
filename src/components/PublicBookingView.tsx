@@ -17,8 +17,17 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  Users,
+  X,
+  ShieldCheck,
+  CalendarX
 } from 'lucide-react';
+
+interface PublicStaff {
+  id: string;
+  name: string;
+}
 
 interface PublicBookingViewProps {
   slug: string;
@@ -30,9 +39,15 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
   const [company, setCompany] = useState<Company | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
+  const [staffList, setStaffList] = useState<PublicStaff[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
+  // 'booking' is the normal reserve-a-slot wizard; 'manage' lets an existing customer look up and
+  // cancel their own upcoming appointments by phone, without any account/login.
+  const [viewMode, setViewMode] = useState<'booking' | 'manage'>('booking');
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
   // Step tracker
   const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Services, 2: Date & Time, 3: Contact & Confirm
   const [success, setSuccess] = useState(false);
@@ -40,6 +55,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
 
   // Scheduling selections
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedStaffId, setSelectedStaffId] = useState('');
   const [selectedDate, setSelectedDate] = useState(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -53,10 +69,18 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerNotes, setCustomerNotes] = useState('');
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Available slots for selected date
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+
+  // "Manage my bookings" lookup
+  const [managePhone, setManagePhone] = useState('');
+  const [manageLoading, setManageLoading] = useState(false);
+  const [manageSearched, setManageSearched] = useState(false);
+  const [myAppointments, setMyAppointments] = useState<any[]>([]);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const renderAdminBar = () => {
     if (!onBackToAdmin) return null;
@@ -85,6 +109,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
         setCompany(data.company);
         setServices(data.services);
         setSettings(data.settings);
+        setStaffList(data.staff || []);
       } catch (err: any) {
         setError(err.message || 'Barbearia não encontrada.');
       } finally {
@@ -110,7 +135,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
     const loadAvailability = async () => {
       try {
         setSlotsLoading(true);
-        const data = await api.getPublicAvailability(company.slug, selectedDate, durationForSelection);
+        const data = await api.getPublicAvailability(company.slug, selectedDate, durationForSelection, selectedStaffId || undefined);
         if (cancelled) return;
         setAvailableSlots(data.slots || []);
         setSlotsUnavailableReason(data.reason || null);
@@ -126,7 +151,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
     loadAvailability();
 
     return () => { cancelled = true; };
-  }, [selectedDate, settings, company, services, selectedServices]);
+  }, [selectedDate, settings, company, services, selectedServices, selectedStaffId]);
 
   const handleToggleService = (srvId: string) => {
     if (selectedServices.includes(srvId)) {
@@ -158,6 +183,10 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
       showToast('Por favor, preencha seu nome e celular de contato.', 'error');
       return;
     }
+    if (!privacyConsent) {
+      showToast('É necessário concordar com o uso dos seus dados para agendar.', 'error');
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -168,7 +197,8 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
         date: selectedDate,
         time: selectedTime,
         serviceIds: selectedServices,
-        notes: customerNotes
+        notes: customerNotes,
+        staffId: selectedStaffId || undefined
       });
       setSuccessApt(data.appointment);
       setSuccess(true);
@@ -176,6 +206,39 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
       showToast(err.message || 'Erro ao realizar agendamento.', 'error');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const selectedStaffName = staffList.find(s => s.id === selectedStaffId)?.name;
+
+  const handleSearchMyAppointments = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!managePhone.replace(/\D/g, '')) {
+      showToast('Informe o telefone usado no agendamento.', 'error');
+      return;
+    }
+    try {
+      setManageLoading(true);
+      setManageSearched(true);
+      const data = await api.getMyPublicAppointments(slug, managePhone);
+      setMyAppointments(data.appointments || []);
+    } catch (err: any) {
+      showToast(err.message || 'Erro ao buscar agendamentos.', 'error');
+    } finally {
+      setManageLoading(false);
+    }
+  };
+
+  const handleCancelMyAppointment = async (id: string) => {
+    try {
+      setCancellingId(id);
+      await api.cancelPublicAppointment(id, managePhone);
+      setMyAppointments(prev => prev.filter(a => a.id !== id));
+      showToast('Agendamento cancelado.');
+    } catch (err: any) {
+      showToast(err.message || 'Erro ao cancelar agendamento.', 'error');
+    } finally {
+      setCancellingId(null);
     }
   };
 
@@ -262,7 +325,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
               </div>
               <div className="flex justify-between">
                 <span className="text-ink-dim font-semibold">PROFISSIONAL:</span>
-                <span className="font-bold text-ink">Qualquer Barbeiro Disponível</span>
+                <span className="font-bold text-ink">{selectedStaffName || 'Qualquer Profissional Disponível'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-ink-dim font-semibold">DATA & HORÁRIO:</span>
@@ -296,6 +359,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
                   setSuccess(false);
                   setStep(1);
                   setSelectedServices([]);
+                  setSelectedStaffId('');
                   setSelectedTime('');
                 }}
                 className="w-full py-2 bg-card border border-ink/10 text-ink-dim rounded-lg text-xs font-semibold hover:bg-paper transition"
@@ -324,6 +388,84 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
           <p className="text-xs text-white/70 mt-1">{company.address || 'São Paulo - SP'}</p>
         </div>
 
+        {/* Toggle between booking a new slot and managing an existing one */}
+        <div className="flex border-b border-ink/10 bg-paper-dim/30 text-center">
+          <button
+            type="button"
+            onClick={() => setViewMode('booking')}
+            className={`flex-1 py-2.5 text-xs font-bold transition cursor-pointer ${viewMode === 'booking' ? 'text-brand-primary' : 'text-ink-dim hover:text-ink'}`}
+          >
+            Novo Agendamento
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('manage')}
+            className={`flex-1 py-2.5 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1 ${viewMode === 'manage' ? 'text-brand-primary' : 'text-ink-dim hover:text-ink'}`}
+          >
+            <CalendarX className="h-3.5 w-3.5" /> Gerenciar Agendamento
+          </button>
+        </div>
+
+        {viewMode === 'manage' ? (
+          <div className="p-6 space-y-5">
+            <div className="space-y-1">
+              <h2 className="text-base font-bold text-ink font-sans tracking-tight">Seus agendamentos</h2>
+              <p className="text-xs text-ink-dim">Digite o celular usado na hora de agendar para ver e cancelar seus horários.</p>
+            </div>
+
+            <form onSubmit={handleSearchMyAppointments} className="flex gap-2">
+              <input
+                type="tel"
+                required
+                placeholder="Ex: (11) 99999-9999"
+                value={managePhone}
+                onChange={(e) => setManagePhone(formatPhoneBR(e.target.value))}
+                maxLength={15}
+                className="flex-1 border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              />
+              <button
+                type="submit"
+                disabled={manageLoading}
+                className="px-4 py-2 bg-brand-primary hover:opacity-90 text-white text-xs font-bold rounded-lg transition disabled:opacity-50 cursor-pointer"
+              >
+                {manageLoading ? '...' : 'Buscar'}
+              </button>
+            </form>
+
+            {manageLoading ? (
+              <div className="py-6 flex justify-center">
+                <div className="w-5 h-5 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : manageSearched && myAppointments.length === 0 ? (
+              <p className="text-sm text-ink-dim italic py-6 text-center">Nenhum agendamento futuro encontrado para esse telefone.</p>
+            ) : (
+              <div className="space-y-2.5">
+                {myAppointments.map(apt => (
+                  <div key={apt.id} className="border border-ink/10 rounded-lg p-3.5 text-xs space-y-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <p className="font-bold text-ink text-sm">{apt.date.split('-').reverse().join('/')} às {apt.time}</p>
+                        <p className="text-ink-dim mt-0.5">{apt.serviceNames.join(', ')}</p>
+                      </div>
+                      <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full flex-shrink-0 ${apt.status === 'confirmed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                        {apt.status === 'confirmed' ? 'Confirmado' : 'Aguardando'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCancelMyAppointment(apt.id)}
+                      disabled={cancellingId === apt.id}
+                      className="w-full py-2 bg-card border border-bad/30 text-bad text-xs font-bold rounded-lg hover:bg-bad/10 transition disabled:opacity-50 cursor-pointer"
+                    >
+                      {cancellingId === apt.id ? 'Cancelando...' : 'Cancelar Agendamento'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+        <>
         {/* Step indicator rail */}
         <div className="flex border-b border-ink/10 bg-paper-dim/50 text-center">
           <div className={`flex-1 py-3 text-xs font-bold border-r border-ink/10 transition-all ${step === 1 ? 'bg-card text-brand-primary border-b-2 border-b-brand-primary' : 'text-ink-dim'}`}>
@@ -408,6 +550,31 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Voltar para Serviços
             </button>
+
+            {staffList.length > 1 && (
+              <div>
+                <label className="block text-xs font-bold text-ink-dim mb-1">PROFISSIONAL</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStaffId('')}
+                    className={`flex items-center justify-center gap-1.5 py-2.5 px-2 text-xs font-bold rounded-lg border transition cursor-pointer ${!selectedStaffId ? 'bg-brand-primary border-brand-primary text-white shadow-sm' : 'bg-card border-ink/10 text-ink-dim hover:bg-paper'}`}
+                  >
+                    <Users className="h-3.5 w-3.5" /> Qualquer um
+                  </button>
+                  {staffList.map(s => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setSelectedStaffId(s.id)}
+                      className={`py-2.5 px-2 text-xs font-bold rounded-lg border text-center transition cursor-pointer truncate ${selectedStaffId === s.id ? 'bg-brand-primary border-brand-primary text-white shadow-sm' : 'bg-card border-ink/10 text-ink-dim hover:bg-paper'}`}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -545,6 +712,25 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
               </div>
             </div>
 
+            <label className="flex items-start gap-2.5 text-xs text-ink-dim cursor-pointer">
+              <input
+                type="checkbox"
+                checked={privacyConsent}
+                onChange={(e) => setPrivacyConsent(e.target.checked)}
+                className="mt-0.5 rounded accent-brand-primary focus:ring-brand-primary h-4 w-4 flex-shrink-0"
+              />
+              <span>
+                Concordo com o uso dos meus dados (nome, telefone) para realizar e gerenciar este agendamento.{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="text-brand-primary font-semibold hover:underline cursor-pointer"
+                >
+                  Ver política de privacidade
+                </button>
+              </span>
+            </label>
+
             <button
               type="submit"
               disabled={submitting}
@@ -554,8 +740,41 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
             </button>
           </form>
         )}
+        </>
+        )}
       </div>
     </div>
+
+    {showPrivacyModal && (
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+        onClick={() => setShowPrivacyModal(false)}
+      >
+        <div
+          className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+            <h3 className="text-base font-bold text-ink flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-brand-primary" /> Política de Privacidade
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowPrivacyModal(false)}
+              className="text-ink-dim hover:text-ink font-bold cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="p-6 space-y-3 text-xs text-ink-dim leading-relaxed max-h-[60vh] overflow-y-auto">
+            <p><strong className="text-ink">Quais dados coletamos:</strong> seu nome e número de celular, informados por você neste formulário.</p>
+            <p><strong className="text-ink">Por que coletamos:</strong> exclusivamente para criar, confirmar e gerenciar o seu agendamento com {company?.name || 'este estabelecimento'}, incluindo o envio de mensagens de confirmação e lembrete por SMS ou WhatsApp.</p>
+            <p><strong className="text-ink">Com quem compartilhamos:</strong> seus dados não são vendidos nem compartilhados com terceiros — ficam disponíveis apenas para {company?.name || 'o estabelecimento'} administrar seus próprios agendamentos.</p>
+            <p><strong className="text-ink">Seus direitos:</strong> você pode solicitar a exclusão dos seus dados ou de um agendamento diretamente com {company?.name || 'o estabelecimento'}, ou usar a opção "Gerenciar Agendamento" nesta página para cancelar uma reserva a qualquer momento.</p>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

@@ -74,15 +74,19 @@ app.get('/api/public/company/:slug', ah(async (req, res) => {
   }
   const services = (await dbOperations.getServices(company.id)).filter(s => s.active);
   const settings = await dbOperations.getSettings(company.id);
+  // Name/id only — never leak email, password hash, etc. to the public booking page.
+  const staff = (await dbOperations.getUsers(company.id))
+    .filter(u => u.role !== 'super_admin')
+    .map(u => ({ id: u.id, name: u.name }));
 
-  res.json({ company, services, settings });
+  res.json({ company, services, settings, staff });
 }));
 
 // Real available time slots for a given date, so the public booking widget never offers a slot
 // that's already taken (previously the frontend had no way to know booked times).
 app.get('/api/public/company/:slug/availability', validateQuery(schemas.availabilityQuery), ah(async (req, res) => {
   const { slug } = req.params;
-  const { date, durationMin } = (req as any).validatedQuery as { date: string; durationMin?: number };
+  const { date, durationMin, staffId } = (req as any).validatedQuery as { date: string; durationMin?: number; staffId?: string };
 
   const company = await dbOperations.getCompanyBySlug(slug);
   if (!company) {
@@ -97,8 +101,11 @@ app.get('/api/public/company/:slug/availability', validateQuery(schemas.availabi
     return res.json({ slots: [], reason: 'closed' });
   }
 
+  // Scoped to one professional's own bookings when chosen — otherwise two barbers free at the same
+  // moment would incorrectly block each other, since the whole shop doesn't share a single calendar.
   const bookedRanges = (await dbOperations.getAppointments(company.id))
     .filter(a => a.date === date && a.status !== 'cancelled')
+    .filter(a => !staffId || a.staffId === staffId)
     .map(a => ({ time: a.time, totalDurationMin: a.totalDurationMin }));
 
   // Only exclude past times when browsing today — a future date has no "already passed" slots.
@@ -108,7 +115,7 @@ app.get('/api/public/company/:slug/availability', validateQuery(schemas.availabi
 }));
 
 app.post('/api/public/booking', validateBody(schemas.publicBooking), ah(async (req, res) => {
-  const { companyId, name, phone, date, time, serviceIds, notes } = req.body;
+  const { companyId, name, phone, date, time, serviceIds, notes, staffId } = req.body;
 
   const clients = await dbOperations.getClients(companyId);
   let client = clients.find(c => c.phone.replace(/\D/g, '') === phone.replace(/\D/g, ''));
@@ -139,11 +146,20 @@ app.post('/api/public/booking', validateBody(schemas.publicBooking), ah(async (r
   }
 
   const appointments = (await dbOperations.getAppointments(companyId)).filter(
-    a => a.date === date && a.status !== 'cancelled'
+    a => a.date === date && a.status !== 'cancelled' && (!staffId || a.staffId === staffId)
   );
 
   if (hasTimeConflict(appointments, time, totalDurationMin)) {
     return res.status(400).json({ error: 'Este horário já está reservado. Escolha outro horário.' });
+  }
+
+  let staffName: string | undefined;
+  if (staffId) {
+    const staffUser = await dbOperations.getUserById(staffId);
+    if (!staffUser || staffUser.companyId !== companyId) {
+      return res.status(400).json({ error: 'Profissional inválido.' });
+    }
+    staffName = staffUser.name;
   }
 
   const apt: Appointment = await dbOperations.createAppointment({
@@ -160,6 +176,8 @@ app.post('/api/public/booking', validateBody(schemas.publicBooking), ah(async (r
     totalDurationMin,
     status: 'pending',
     notes,
+    staffId,
+    staffName,
     createdAt: new Date().toISOString()
   });
 
@@ -167,6 +185,47 @@ app.post('/api/public/booking', validateBody(schemas.publicBooking), ah(async (r
   await sendSms(apt.clientPhone, buildBookingSms(company?.name || 'CM Studio', apt));
 
   res.status(201).json({ appointment: apt, message: 'Agendamento solicitado com sucesso!' });
+}));
+
+// Self-service lookup so a customer can see/cancel their own bookings without an account — scoped by
+// phone number (not just the appointment id) so a leaked/guessed id alone can't let a stranger cancel it.
+app.get('/api/public/company/:slug/my-appointments', ah(async (req, res) => {
+  const { slug } = req.params;
+  const phone = String(req.query.phone || '');
+  if (!phone.replace(/\D/g, '')) {
+    return res.status(400).json({ error: 'Informe o telefone usado no agendamento.' });
+  }
+
+  const company = await dbOperations.getCompanyBySlug(slug);
+  if (!company) {
+    return res.status(404).json({ error: 'Barbearia não encontrada' });
+  }
+
+  const cleanPhone = phone.replace(/\D/g, '');
+  const todayStr = getTodayStr();
+  const appointments = (await dbOperations.getAppointments(company.id))
+    .filter(a => a.clientPhone.replace(/\D/g, '') === cleanPhone)
+    .filter(a => a.status !== 'cancelled' && a.status !== 'completed')
+    .filter(a => a.date >= todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+  res.json({ appointments });
+}));
+
+app.post('/api/public/appointments/:id/cancel', validateBody(schemas.cancelByPhone), ah(async (req, res) => {
+  const { id } = req.params;
+  const { phone } = req.body;
+
+  const apt = await dbOperations.getAppointmentById(id);
+  if (!apt || apt.clientPhone.replace(/\D/g, '') !== phone.replace(/\D/g, '')) {
+    return res.status(404).json({ error: 'Agendamento não encontrado.' });
+  }
+  if (apt.status === 'cancelled' || apt.status === 'completed') {
+    return res.status(400).json({ error: 'Este agendamento não pode mais ser cancelado.' });
+  }
+
+  await dbOperations.updateAppointment(id, { status: 'cancelled' });
+  res.json({ success: true });
 }));
 
 // ==========================================
@@ -208,6 +267,47 @@ app.post('/api/auth/change-password', validateBody(schemas.changePassword), ah(a
   const updatedUser = await dbOperations.getUserByEmail(email);
 
   res.json({ success: true, user: sanitizeUser(updatedUser!) });
+}));
+
+// Self-service reset: a 6-digit code texted to the account's phone on file, valid for 15 minutes.
+// Always responds the same way regardless of whether the email exists, so this can't be used to
+// probe which emails have accounts.
+app.post('/api/auth/forgot-password', validateBody(schemas.forgotPassword), ah(async (req, res) => {
+  const { email } = req.body;
+  const genericResponse = { message: 'Se o e-mail existir e tiver um telefone cadastrado, enviamos um código por SMS.' };
+
+  const user = await dbOperations.getUserByEmail(email);
+  if (!user || !user.phone) {
+    return res.json(genericResponse);
+  }
+
+  const code = String(crypto.randomInt(100000, 999999));
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+  await dbOperations.setResetCode(user.id, code, expiresAt);
+  await sendSms(user.phone, `CM Studio: seu código para redefinir a senha é ${code}. Válido por 15 minutos.`);
+
+  res.json(genericResponse);
+}));
+
+app.post('/api/auth/reset-password-with-code', validateBody(schemas.resetPasswordWithCode), ah(async (req, res) => {
+  const { email, code, newPassword } = req.body;
+
+  const user = await dbOperations.getUserByEmail(email);
+  if (!user) {
+    return res.status(400).json({ error: 'Código inválido ou expirado.' });
+  }
+
+  const valid = await dbOperations.consumeResetCode(user.id, code);
+  if (!valid) {
+    return res.status(400).json({ error: 'Código inválido ou expirado.' });
+  }
+
+  await dbOperations.updateUser(user.id, {
+    password: await hashPassword(newPassword),
+    needsPasswordChange: false
+  });
+
+  res.json({ success: true });
 }));
 
 app.post('/api/auth/register', validateBody(schemas.register), ah(async (req, res) => {
@@ -414,11 +514,20 @@ app.get('/api/appointments', ah(async (req, res) => {
 
 app.post('/api/appointments', validateBody(schemas.createAppointment), ah(async (req, res) => {
   const { companyId } = getTenant(req);
-  const { clientId, date, time, serviceIds, notes, status } = req.body;
+  const { clientId, date, time, serviceIds, notes, status, staffId } = req.body;
 
   const client = await dbOperations.getClientById(clientId);
   if (!client || client.companyId !== companyId) {
     return res.status(404).json({ error: 'Cliente não encontrado.' });
+  }
+
+  let staffName: string | undefined;
+  if (staffId) {
+    const staffUser = await dbOperations.getUserById(staffId);
+    if (!staffUser || staffUser.companyId !== companyId) {
+      return res.status(400).json({ error: 'Profissional inválido.' });
+    }
+    staffName = staffUser.name;
   }
 
   const allServices = await dbOperations.getServices(companyId);
@@ -427,8 +536,9 @@ app.post('/api/appointments', validateBody(schemas.createAppointment), ah(async 
   const totalDurationMin = selectedServices.reduce((sum, s) => sum + s.durationMin, 0);
   const serviceNames = selectedServices.map(s => s.name);
 
+  // Scoped to the chosen professional's own bookings, same reasoning as the public availability endpoint.
   const appointments = (await dbOperations.getAppointments(companyId)).filter(
-    a => a.date === date && a.status !== 'cancelled'
+    a => a.date === date && a.status !== 'cancelled' && (!staffId || a.staffId === staffId)
   );
 
   if (hasTimeConflict(appointments, time, totalDurationMin)) {
@@ -449,6 +559,8 @@ app.post('/api/appointments', validateBody(schemas.createAppointment), ah(async 
     totalDurationMin,
     status: status || 'confirmed',
     notes,
+    staffId,
+    staffName,
     createdAt: new Date().toISOString()
   });
 
@@ -474,6 +586,17 @@ app.put('/api/appointments/:id', validateBody(schemas.updateAppointment), ah(asy
     updateData.totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
     updateData.totalDurationMin = selectedServices.reduce((sum, s) => sum + s.durationMin, 0);
     updateData.serviceNames = selectedServices.map(s => s.name);
+  }
+  if ('staffId' in updateData) {
+    if (updateData.staffId) {
+      const staffUser = await dbOperations.getUserById(updateData.staffId);
+      if (!staffUser || staffUser.companyId !== companyId) {
+        return res.status(400).json({ error: 'Profissional inválido.' });
+      }
+      updateData.staffName = staffUser.name;
+    } else {
+      updateData.staffName = undefined;
+    }
   }
 
   const updated = await dbOperations.updateAppointment(id, updateData);
@@ -630,7 +753,7 @@ app.get('/api/products', ah(async (req, res) => {
 
 app.post('/api/products', validateBody(schemas.createProduct), ah(async (req, res) => {
   const { companyId } = getTenant(req);
-  const { name, price, stock } = req.body;
+  const { name, price, stock, minStock } = req.body;
 
   const prod = await dbOperations.createProduct({
     id: `prod-${Date.now()}`,
@@ -638,6 +761,7 @@ app.post('/api/products', validateBody(schemas.createProduct), ah(async (req, re
     name,
     price,
     stock,
+    minStock: minStock ?? 5,
     createdAt: new Date().toISOString()
   });
 
@@ -952,7 +1076,7 @@ app.get('/api/team', ah(async (req, res) => {
 
 app.post('/api/team', validateBody(schemas.createTeamMember), ah(async (req, res) => {
   const { companyId } = getTenant(req);
-  const { name, email, phone, password } = req.body;
+  const { name, email, phone, password, commissionPercent } = req.body;
 
   const existing = await dbOperations.getUserByEmail(email);
   if (existing) {
@@ -968,6 +1092,7 @@ app.post('/api/team', validateBody(schemas.createTeamMember), ah(async (req, res
     role: 'staff',
     password: await hashPassword(password),
     needsPasswordChange: false,
+    commissionPercent,
     createdAt: new Date().toISOString()
   });
 
@@ -1001,6 +1126,41 @@ app.delete('/api/team/:id', ah(async (req, res) => {
 
   await dbOperations.deleteUser(id);
   res.json({ success: true });
+}));
+
+// Per-staff commission report for a given month (defaults to the current one) — computed on the fly
+// from completed appointments rather than stored per-transaction, since it only needs to reflect
+// today's commissionPercent and appointment data, not a historical snapshot.
+app.get('/api/team/commissions', ah(async (req, res) => {
+  const { companyId } = getTenant(req);
+  const month = typeof req.query.month === 'string' && /^\d{4}-\d{2}$/.test(req.query.month)
+    ? req.query.month
+    : getTodayStr().substring(0, 7);
+
+  const [team, appointments] = await Promise.all([
+    dbOperations.getUsers(companyId),
+    dbOperations.getAppointments(companyId)
+  ]);
+
+  const completedThisMonth = appointments.filter(a => a.status === 'completed' && a.date.startsWith(month));
+
+  const report = team
+    .filter(u => u.role !== 'super_admin')
+    .map(u => {
+      const own = completedThisMonth.filter(a => a.staffId === u.id);
+      const totalRevenue = own.reduce((sum, a) => sum + a.totalPrice, 0);
+      const commissionPercent = u.commissionPercent ?? 0;
+      return {
+        staffId: u.id,
+        staffName: u.name,
+        commissionPercent,
+        completedCount: own.length,
+        totalRevenue,
+        commissionOwed: totalRevenue * (commissionPercent / 100)
+      };
+    });
+
+  res.json({ month, report });
 }));
 
 // ==========================================

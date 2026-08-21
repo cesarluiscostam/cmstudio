@@ -28,6 +28,7 @@ export interface User {
   role: 'super_admin' | 'manager' | 'staff' | 'admin' | 'barber'; // 'admin' behaves as manager, 'barber' as staff
   password?: string;
   needsPasswordChange?: boolean;
+  commissionPercent?: number; // % of each completed appointment's price owed to this staff member
   createdAt: string;
 }
 
@@ -71,6 +72,8 @@ export interface Appointment {
   status: AppointmentStatus;
   notes?: string;
   reminderSent?: boolean;
+  staffId?: string;
+  staffName?: string; // denormalized for quick read
   createdAt: string;
 }
 
@@ -94,6 +97,7 @@ export interface Product {
   name: string;
   price: number;
   stock: number;
+  minStock: number; // stock at/below this triggers a low-stock warning
   createdAt: string;
 }
 

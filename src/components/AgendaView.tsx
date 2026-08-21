@@ -8,7 +8,7 @@ import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
 import { useToast, useConfirm } from '../lib/ui';
 import { useEscapeKey } from '../hooks/useEscapeKey';
-import { Appointment, Client, Service, Company } from '../types';
+import { Appointment, Client, Service, Company, User as UserType } from '../types';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -28,17 +28,19 @@ import {
 
 interface AgendaViewProps {
   company: Company | null;
+  user: UserType | null;
   onOpenNewAppointment: () => void;
   refreshTrigger: number;
   onRefresh: () => void;
 }
 
-export default function AgendaView({ company, onOpenNewAppointment, refreshTrigger, onRefresh }: AgendaViewProps) {
+export default function AgendaView({ company, user, onOpenNewAppointment, refreshTrigger, onRefresh }: AgendaViewProps) {
   const showToast = useToast();
   const confirmDialog = useConfirm();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [team, setTeam] = useState<Omit<UserType, 'password'>[]>([]);
   const [selectedDate, setSelectedDate] = useState(getTodayStr());
   const [viewType, setViewType] = useState<'day' | 'week' | 'list'>('day');
   const [loading, setLoading] = useState(true);
@@ -57,6 +59,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
   const [editTime, setEditTime] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [editStatus, setEditStatus] = useState<Appointment['status']>('confirmed');
+  const [editStaffId, setEditStaffId] = useState('');
 
   // Create fields (integrated directly in Agenda for ease)
   const [newClient, setNewClient] = useState('');
@@ -64,18 +67,21 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
   const [newDate, setNewDate] = useState(getTodayStr());
   const [newTime, setNewTime] = useState('10:00');
   const [newNotes, setNewNotes] = useState('');
+  const [newStaffId, setNewStaffId] = useState('');
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [aptData, srvData, cltData] = await Promise.all([
+      const [aptData, srvData, cltData, teamData] = await Promise.all([
         api.getAppointments(),
         api.getServices(),
-        api.getClients()
+        api.getClients(),
+        api.getTeam()
       ]);
       setAppointments(aptData);
       setServices(srvData);
       setClients(cltData);
+      setTeam(teamData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -86,6 +92,14 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
   useEffect(() => {
     loadData();
   }, [selectedDate, refreshTrigger]);
+
+  // A barber booking their own agenda almost always means themself — pre-select rather than
+  // making them pick their own name from the list every time.
+  useEffect(() => {
+    if (showCreateModal && user?.role === 'staff' && user.id) {
+      setNewStaffId(user.id);
+    }
+  }, [showCreateModal, user]);
 
   const handlePrevDay = () => {
     const d = new Date(`${selectedDate}T00:00:00`);
@@ -169,6 +183,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
     setEditTime(selectedApt.time);
     setEditNotes(selectedApt.notes || '');
     setEditStatus(selectedApt.status);
+    setEditStaffId(selectedApt.staffId || '');
     setShowDetailModal(false);
     setShowEditModal(true);
   };
@@ -183,7 +198,8 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         time: editTime,
         serviceIds: editServices,
         notes: editNotes,
-        status: editStatus
+        status: editStatus,
+        staffId: editStaffId || null
       });
       setShowEditModal(false);
       onRefresh();
@@ -208,13 +224,15 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
         time: newTime,
         serviceIds: newServices,
         notes: newNotes,
-        status: 'confirmed'
+        status: 'confirmed',
+        staffId: newStaffId || undefined
       });
       setShowCreateModal(false);
       // Reset
       setNewClient('');
       setNewServices([]);
       setNewNotes('');
+      setNewStaffId('');
       onRefresh();
       loadData();
     } catch (err: any) {
@@ -249,8 +267,13 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
     return `https://wa.me/55${formattedPhone}?text=${encodeURIComponent(text)}`;
   };
 
+  // Staff only ever see their own queue — "Minha Agenda" wouldn't mean much showing everyone else's too.
+  const visibleAppointments = (user?.role === 'staff' && user.id)
+    ? appointments.filter(a => a.staffId === user.id)
+    : appointments;
+
   // Filter current day appointments
-  const dayAppointments = appointments.filter(a => a.date === selectedDate);
+  const dayAppointments = visibleAppointments.filter(a => a.date === selectedDate);
 
   // Filter week appointments (Monday to Saturday containing selectedDate)
   const getWeekDays = (refDateStr: string) => {
@@ -385,6 +408,11 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                               <span className="font-semibold text-ink-dim">
                                 {apt.serviceNames.join(', ')}
                               </span>
+                              {apt.staffName && (
+                                <span className="flex items-center gap-1 font-medium text-brand-primary">
+                                  <User className="h-3.5 w-3.5" /> {apt.staffName}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -409,7 +437,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
           {viewType === 'week' && (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {weekDays.map((dayStr, index) => {
-                const dayApts = appointments.filter(a => a.date === dayStr);
+                const dayApts = visibleAppointments.filter(a => a.date === dayStr);
                 const isSelected = dayStr === selectedDate;
                 const dateObj = new Date(`${dayStr}T00:00:00`);
 
@@ -465,10 +493,10 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
             <div className="bg-card rounded-xl border border-ink/10 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-ink/10 bg-paper-dim/50 flex items-center justify-between">
                 <span className="text-xs font-bold text-ink-dim">HISTÓRICO GERAL DE AGENDAMENTOS</span>
-                <span className="text-xs text-ink-dim font-medium">{appointments.length} itens no total</span>
+                <span className="text-xs text-ink-dim font-medium">{visibleAppointments.length} itens no total</span>
               </div>
 
-              {appointments.length === 0 ? (
+              {visibleAppointments.length === 0 ? (
                 <div className="py-20 text-center text-ink-dim text-sm">
                   Nenhum agendamento encontrado.
                 </div>
@@ -479,6 +507,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                       <tr>
                         <th className="px-6 py-3.5 text-left">Data/Hora</th>
                         <th className="px-6 py-3.5 text-left">Cliente</th>
+                        <th className="px-6 py-3.5 text-left">Profissional</th>
                         <th className="px-6 py-3.5 text-left">Serviços</th>
                         <th className="px-6 py-3.5 text-left">Preço</th>
                         <th className="px-6 py-3.5 text-left">Status</th>
@@ -486,7 +515,7 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-ink/10 text-ink-dim">
-                      {appointments
+                      {visibleAppointments
                         .sort((a,b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time))
                         .map(apt => (
                           <tr key={apt.id} className="hover:bg-paper-dim/40 transition">
@@ -499,6 +528,9 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                                 <span className="font-semibold text-ink block">{apt.clientName}</span>
                                 <span className="text-ink-dim text-xs">{apt.clientPhone}</span>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-ink-dim text-xs">{apt.staffName || '—'}</span>
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-ink-dim line-clamp-1 text-xs">{apt.serviceNames.join(', ')}</span>
@@ -584,6 +616,10 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                 <div>
                   <span className="text-ink-dim text-xs font-semibold block">VALOR TOTAL</span>
                   <span className="font-extrabold text-brand-primary text-base">R$ {selectedApt.totalPrice.toFixed(2)}</span>
+                </div>
+                <div>
+                  <span className="text-ink-dim text-xs font-semibold block">PROFISSIONAL</span>
+                  <span className="font-bold text-ink">{selectedApt.staffName || 'Não definido'}</span>
                 </div>
               </div>
 
@@ -732,6 +768,20 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                 </select>
               </div>
 
+              <div>
+                <label className="block text-xs font-bold text-ink-dim mb-1">PROFISSIONAL</label>
+                <select
+                  value={editStaffId}
+                  onChange={(e) => setEditStaffId(e.target.value)}
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
+                >
+                  <option value="">Sem profissional definido</option>
+                  {team.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-ink-dim mb-1">HORÁRIO</label>
@@ -857,6 +907,20 @@ export default function AgendaView({ company, onOpenNewAppointment, refreshTrigg
                   <option value="">-- Selecione o Cliente --</option>
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.name} ({c.phone})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-dim mb-1">PROFISSIONAL</label>
+                <select
+                  value={newStaffId}
+                  onChange={(e) => setNewStaffId(e.target.value)}
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary bg-card"
+                >
+                  <option value="">Sem profissional definido</option>
+                  {team.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
                 </select>
               </div>

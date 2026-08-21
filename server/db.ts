@@ -49,6 +49,7 @@ function mapUser(row: any): User {
     role: row.role,
     password: row.password_hash,
     needsPasswordChange: row.needs_password_change,
+    commissionPercent: row.commission_percent !== null && row.commission_percent !== undefined ? Number(row.commission_percent) : undefined,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
   };
 }
@@ -109,6 +110,8 @@ function mapAppointment(row: any): Appointment {
     status: row.status,
     notes: row.notes ?? undefined,
     reminderSent: row.reminder_sent,
+    staffId: row.staff_id ?? undefined,
+    staffName: row.staff_name ?? undefined,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
   };
 }
@@ -134,6 +137,7 @@ function mapProduct(row: any): Product {
     name: row.name,
     price: Number(row.price),
     stock: row.stock,
+    minStock: row.min_stock,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
   };
 }
@@ -229,10 +233,10 @@ export const dbOperations = {
   },
   createUser: async (user: User): Promise<User> => {
     await pool.query(
-      `INSERT INTO users (id, company_id, name, email, phone, role, password_hash, needs_password_change, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+      `INSERT INTO users (id, company_id, name, email, phone, role, password_hash, needs_password_change, commission_percent, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
       [user.id, user.companyId, user.name, user.email, user.phone ?? null, user.role,
-       user.password, user.needsPasswordChange ?? false, user.createdAt]
+       user.password, user.needsPasswordChange ?? false, user.commissionPercent ?? null, user.createdAt]
     );
     return user;
   },
@@ -241,13 +245,26 @@ export const dbOperations = {
     if (!existing) return null;
     const merged = { ...existing, ...updated };
     await pool.query(
-      `UPDATE users SET name=$2, email=$3, phone=$4, role=$5, password_hash=$6, needs_password_change=$7 WHERE id=$1`,
-      [id, merged.name, merged.email, merged.phone ?? null, merged.role, merged.password, merged.needsPasswordChange ?? false]
+      `UPDATE users SET name=$2, email=$3, phone=$4, role=$5, password_hash=$6, needs_password_change=$7, commission_percent=$8 WHERE id=$1`,
+      [id, merged.name, merged.email, merged.phone ?? null, merged.role, merged.password, merged.needsPasswordChange ?? false, merged.commissionPercent ?? null]
     );
     return dbOperations.getUserById(id);
   },
   deleteUser: async (id: string): Promise<boolean> => {
     await pool.query('DELETE FROM users WHERE id = $1', [id]);
+    return true;
+  },
+  // Password reset (SMS-delivered code) — code is single-use and time-limited, cleared on success.
+  setResetCode: async (userId: string, code: string, expiresAt: string): Promise<void> => {
+    await pool.query('UPDATE users SET reset_code = $2, reset_code_expires_at = $3 WHERE id = $1', [userId, code, expiresAt]);
+  },
+  consumeResetCode: async (userId: string, code: string): Promise<boolean> => {
+    const { rows } = await pool.query(
+      `SELECT 1 FROM users WHERE id = $1 AND reset_code = $2 AND reset_code_expires_at > now()`,
+      [userId, code]
+    );
+    if (rows.length === 0) return false;
+    await pool.query('UPDATE users SET reset_code = NULL, reset_code_expires_at = NULL WHERE id = $1', [userId]);
     return true;
   },
 
@@ -357,8 +374,8 @@ export const dbOperations = {
   },
   createProduct: async (product: Product): Promise<Product> => {
     await pool.query(
-      `INSERT INTO products (id, company_id, name, price, stock, created_at) VALUES ($1,$2,$3,$4,$5,$6)`,
-      [product.id, product.companyId, product.name, product.price, product.stock, product.createdAt]
+      `INSERT INTO products (id, company_id, name, price, stock, min_stock, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [product.id, product.companyId, product.name, product.price, product.stock, product.minStock ?? 5, product.createdAt]
     );
     return product;
   },
@@ -366,7 +383,7 @@ export const dbOperations = {
     const existing = await dbOperations.getProductById(id);
     if (!existing) return null;
     const merged = { ...existing, ...updated };
-    await pool.query(`UPDATE products SET name=$2, price=$3, stock=$4 WHERE id=$1`, [id, merged.name, merged.price, merged.stock]);
+    await pool.query(`UPDATE products SET name=$2, price=$3, stock=$4, min_stock=$5 WHERE id=$1`, [id, merged.name, merged.price, merged.stock, merged.minStock ?? 5]);
     return dbOperations.getProductById(id);
   },
   deleteProduct: async (id: string): Promise<boolean> => {
@@ -416,11 +433,11 @@ export const dbOperations = {
   },
   createAppointment: async (apt: Appointment): Promise<Appointment> => {
     await pool.query(
-      `INSERT INTO appointments (id, company_id, client_id, client_name, client_phone, date, time, service_ids, service_names, total_price, total_duration_min, status, notes, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      `INSERT INTO appointments (id, company_id, client_id, client_name, client_phone, date, time, service_ids, service_names, total_price, total_duration_min, status, notes, staff_id, staff_name, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [apt.id, apt.companyId, apt.clientId, apt.clientName, apt.clientPhone, apt.date, apt.time,
        JSON.stringify(apt.serviceIds), JSON.stringify(apt.serviceNames), apt.totalPrice, apt.totalDurationMin,
-       apt.status, apt.notes ?? null, apt.createdAt]
+       apt.status, apt.notes ?? null, apt.staffId ?? null, apt.staffName ?? null, apt.createdAt]
     );
 
     if (apt.status === 'pending') {
@@ -444,18 +461,19 @@ export const dbOperations = {
 
     await pool.query(
       `UPDATE appointments SET client_id=$2, client_name=$3, client_phone=$4, date=$5, time=$6, service_ids=$7, service_names=$8,
-         total_price=$9, total_duration_min=$10, status=$11, notes=$12, reminder_sent=$13 WHERE id=$1`,
+         total_price=$9, total_duration_min=$10, status=$11, notes=$12, reminder_sent=$13, staff_id=$14, staff_name=$15 WHERE id=$1`,
       [id, newApt.clientId, newApt.clientName, newApt.clientPhone, newApt.date, newApt.time,
        JSON.stringify(newApt.serviceIds), JSON.stringify(newApt.serviceNames), newApt.totalPrice,
-       newApt.totalDurationMin, newApt.status, newApt.notes ?? null, reminderSent]
+       newApt.totalDurationMin, newApt.status, newApt.notes ?? null, reminderSent, newApt.staffId ?? null, newApt.staffName ?? null]
     );
 
     if (oldApt.status !== 'completed' && newApt.status === 'completed') {
+      const commissionNote = newApt.staffName ? ` (${newApt.staffName})` : '';
       await pool.query(
         `INSERT INTO transactions (id, company_id, type, amount, description, category, date, appointment_id, created_at)
          VALUES ($1,$2,'income',$3,$4,'Atendimento',$5,$6,$7)`,
         [`tx-apt-${Date.now()}`, newApt.companyId, newApt.totalPrice,
-         `Atendimento: ${newApt.clientName} - ${newApt.serviceNames.join(', ')}`, newApt.date, newApt.id, new Date().toISOString()]
+         `Atendimento: ${newApt.clientName} - ${newApt.serviceNames.join(', ')}${commissionNote}`, newApt.date, newApt.id, new Date().toISOString()]
       );
       await pool.query(
         `UPDATE clients SET total_spent = total_spent + $2, visits_count = visits_count + 1, last_visit_at = $3 WHERE id = $1`,

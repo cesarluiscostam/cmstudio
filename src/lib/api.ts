@@ -53,9 +53,10 @@ export const api = {
     return res.json();
   },
 
-  getPublicAvailability: async (slug: string, date: string, durationMin?: number) => {
+  getPublicAvailability: async (slug: string, date: string, durationMin?: number, staffId?: string) => {
     const params = new URLSearchParams({ date });
     if (durationMin) params.set('durationMin', String(durationMin));
+    if (staffId) params.set('staffId', staffId);
     const res = await fetch(`${API_BASE}/public/company/${slug}/availability?${params.toString()}`);
     if (!res.ok) {
       throw new Error('Erro ao carregar horários disponíveis');
@@ -71,6 +72,7 @@ export const api = {
     time: string;
     serviceIds: string[];
     notes?: string;
+    staffId?: string;
   }) => {
     const res = await fetch(`${API_BASE}/public/booking`, {
       method: 'POST',
@@ -80,6 +82,28 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Erro ao realizar agendamento');
+    }
+    return res.json();
+  },
+
+  getMyPublicAppointments: async (slug: string, phone: string) => {
+    const res = await fetch(`${API_BASE}/public/company/${slug}/my-appointments?phone=${encodeURIComponent(phone)}`);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao buscar agendamentos');
+    }
+    return res.json();
+  },
+
+  cancelPublicAppointment: async (id: string, phone: string) => {
+    const res = await fetch(`${API_BASE}/public/appointments/${id}/cancel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao cancelar agendamento');
     }
     return res.json();
   },
@@ -154,6 +178,32 @@ export const api = {
     if (data.token) localStorage.setItem('bf_token', data.token);
     else localStorage.removeItem('bf_token');
     return data;
+  },
+
+  forgotPassword: async (email: string) => {
+    const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Erro ao solicitar redefinição de senha.');
+    }
+    return res.json();
+  },
+
+  resetPasswordWithCode: async (payload: { email: string; code: string; newPassword: string }) => {
+    const res = await fetch(`${API_BASE}/auth/reset-password-with-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Código inválido ou expirado.');
+    }
+    return res.json();
   },
 
   logout: () => {
@@ -502,6 +552,15 @@ export const api = {
       const err = await res.json();
       throw new Error(err.error || 'Erro ao atualizar membro da equipe');
     }
+    return res.json();
+  },
+
+  getTeamCommissions: async (month?: string) => {
+    const params = month ? `?month=${month}` : '';
+    const res = await fetch(`${API_BASE}/team/commissions${params}`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error('Erro ao carregar comissões');
     return res.json();
   },
 

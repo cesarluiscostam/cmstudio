@@ -25,7 +25,8 @@ import {
   Edit2,
   Package,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CaixaViewProps {
@@ -63,6 +64,7 @@ export default function CaixaView({
   const [prodName, setProdName] = useState('');
   const [prodPrice, setProdPrice] = useState(0);
   const [prodStock, setProdStock] = useState(0);
+  const [prodMinStock, setProdMinStock] = useState(5);
 
   // Manual Transaction Form
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -157,6 +159,7 @@ export default function CaixaView({
     setProdName('');
     setProdPrice(0);
     setProdStock(0);
+    setProdMinStock(5);
     setShowProductFormModal(true);
   };
 
@@ -165,6 +168,7 @@ export default function CaixaView({
     setProdName(p.name);
     setProdPrice(p.price);
     setProdStock(p.stock);
+    setProdMinStock(p.minStock ?? 5);
     setShowProductFormModal(true);
   };
 
@@ -177,9 +181,9 @@ export default function CaixaView({
 
     try {
       if (editingProduct) {
-        await api.updateProduct(editingProduct.id, { name: prodName, price: prodPrice, stock: prodStock });
+        await api.updateProduct(editingProduct.id, { name: prodName, price: prodPrice, stock: prodStock, minStock: prodMinStock });
       } else {
-        await api.createProduct({ name: prodName, price: prodPrice, stock: prodStock });
+        await api.createProduct({ name: prodName, price: prodPrice, stock: prodStock, minStock: prodMinStock });
       }
       setShowProductFormModal(false);
       loadData();
@@ -394,6 +398,11 @@ export default function CaixaView({
             className="flex items-center gap-1.5 px-3 py-2 bg-card border border-ink/10 text-ink-dim text-xs font-bold rounded-lg hover:bg-paper transition cursor-pointer"
           >
             <Package className="h-3.5 w-3.5 text-ink-dim" /> Gerenciar Produtos
+            {products.filter(p => p.stock <= p.minStock).length > 0 && (
+              <span className="flex items-center gap-1 text-[10px] font-bold text-bad bg-bad/10 px-1.5 py-0.5 rounded-full">
+                <AlertTriangle className="h-2.5 w-2.5" /> {products.filter(p => p.stock <= p.minStock).length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setShowSaleModal(true)}
@@ -776,11 +785,22 @@ export default function CaixaView({
                 <p className="text-center text-sm text-ink-dim py-8">Nenhum produto cadastrado ainda.</p>
               ) : (
                 <div className="divide-y divide-ink/8 max-h-[340px] overflow-y-auto">
-                  {products.map((p) => (
+                  {products.map((p) => {
+                    const isLowStock = p.stock <= p.minStock;
+                    return (
                     <div key={p.id} className="py-3 flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-bold text-ink">{p.name}</p>
-                        <p className="text-xs text-ink-dim">R$ {p.price.toFixed(2)} • Estoque: {p.stock} un</p>
+                        <p className="text-sm font-bold text-ink flex items-center gap-1.5">
+                          {p.name}
+                          {isLowStock && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-bad bg-bad/10 px-1.5 py-0.5 rounded uppercase">
+                              <AlertTriangle className="h-2.5 w-2.5" /> Estoque baixo
+                            </span>
+                          )}
+                        </p>
+                        <p className={`text-xs ${isLowStock ? 'text-bad font-semibold' : 'text-ink-dim'}`}>
+                          R$ {p.price.toFixed(2)} • Estoque: {p.stock} un {isLowStock && `(mín. ${p.minStock})`}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button
@@ -799,7 +819,8 @@ export default function CaixaView({
                         </button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -866,6 +887,18 @@ export default function CaixaView({
                     className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-ink-dim mb-1">AVISAR QUANDO ESTOQUE CHEGAR A (UN)</label>
+                <input
+                  type="number"
+                  required
+                  min={0}
+                  value={prodMinStock || ''}
+                  onChange={(e) => setProdMinStock(Number(e.target.value))}
+                  className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                />
               </div>
             </div>
 

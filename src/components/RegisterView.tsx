@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { api } from '../lib/api';
 import { formatPhoneBR } from '../lib/phone';
-import { AlertCircle, ArrowLeft, Building, Sparkles } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Building, Sparkles, ShieldCheck, X } from 'lucide-react';
 
 interface RegisterViewProps {
   onSuccess: (user: any, company: any) => void;
@@ -19,12 +19,18 @@ export default function RegisterView({ onSuccess, onNavigateToLogin }: RegisterV
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!privacyConsent) {
+      setError('É necessário concordar com os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
     setLoading(true);
 
     try {
@@ -164,6 +170,25 @@ export default function RegisterView({ onSuccess, onNavigateToLogin }: RegisterV
               </span>
             </div>
 
+            <label className="flex items-start gap-2.5 text-xs text-ink-dim cursor-pointer">
+              <input
+                type="checkbox"
+                checked={privacyConsent}
+                onChange={(e) => setPrivacyConsent(e.target.checked)}
+                className="mt-0.5 rounded accent-ink focus:ring-ink h-4 w-4 flex-shrink-0"
+              />
+              <span>
+                Concordo com os Termos de Uso e a{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="text-ink font-semibold hover:underline cursor-pointer"
+                >
+                  Política de Privacidade
+                </button>
+              </span>
+            </label>
+
             <div className="pt-2">
               <button
                 type="submit"
@@ -185,6 +210,37 @@ export default function RegisterView({ onSuccess, onNavigateToLogin }: RegisterV
           </div>
         </div>
       </div>
+
+      {showPrivacyModal && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-start justify-center overflow-y-auto p-4 z-50 animate-fade-in"
+          onClick={() => setShowPrivacyModal(false)}
+        >
+          <div
+            className="bg-card rounded-xl border border-ink/10 max-w-md w-full overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 border-b border-ink/10 bg-paper flex items-center justify-between">
+              <h3 className="text-base font-bold text-ink flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-brand-primary" /> Política de Privacidade
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(false)}
+                className="text-ink-dim hover:text-ink font-bold cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-6 space-y-3 text-xs text-ink-dim leading-relaxed max-h-[60vh] overflow-y-auto">
+              <p><strong className="text-ink">Quais dados coletamos:</strong> seu nome, e-mail e telefone, usados para criar e proteger o acesso à sua conta.</p>
+              <p><strong className="text-ink">Dados dos seus clientes:</strong> ao usar o CM Studio, você (o estabelecimento) coleta dados dos seus próprios clientes (nome, telefone) para gerenciar agendamentos — você é responsável por tratar esses dados conforme a LGPD.</p>
+              <p><strong className="text-ink">Com quem compartilhamos:</strong> não vendemos nem compartilhamos seus dados com terceiros, além dos serviços estritamente necessários para operar a plataforma (ex: envio de SMS).</p>
+              <p><strong className="text-ink">Seus direitos:</strong> você pode solicitar a exclusão da sua conta e dos dados armazenados a qualquer momento, entrando em contato com o suporte.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

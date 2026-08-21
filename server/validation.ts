@@ -61,6 +61,7 @@ export const schemas = {
     time: timeStr,
     serviceIds: z.array(z.string()).min(1, 'Selecione ao menos um serviço.'),
     notes: z.string().optional(),
+    staffId: z.string().optional(),
   }),
 
   createAppointment: z.object({
@@ -70,6 +71,7 @@ export const schemas = {
     serviceIds: z.array(z.string()).min(1, 'Selecione ao menos um serviço.'),
     notes: z.string().optional(),
     status: z.enum(['pending', 'confirmed', 'cancelled', 'completed']).optional(),
+    staffId: z.string().optional(),
   }),
 
   updateAppointment: z.object({
@@ -79,6 +81,11 @@ export const schemas = {
     serviceIds: z.array(z.string()).optional(),
     notes: z.string().optional(),
     status: z.enum(['pending', 'confirmed', 'cancelled', 'completed']).optional(),
+    staffId: z.string().nullable().optional(),
+  }),
+
+  cancelByPhone: z.object({
+    phone: nonEmpty,
   }),
 
   createClient: z.object({
@@ -121,12 +128,14 @@ export const schemas = {
     name: nonEmpty,
     price: z.coerce.number().nonnegative(),
     stock: z.coerce.number().int().nonnegative(),
+    minStock: z.coerce.number().int().nonnegative().optional(),
   }),
 
   updateProduct: z.object({
     name: z.string().optional(),
     price: z.coerce.number().nonnegative().optional(),
     stock: z.coerce.number().int().nonnegative().optional(),
+    minStock: z.coerce.number().int().nonnegative().optional(),
   }),
 
   createSale: z.object({
@@ -185,15 +194,28 @@ export const schemas = {
     email: z.string().trim().email('E-mail inválido.'),
     phone: z.string().optional(),
     password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres.'),
+    commissionPercent: z.coerce.number().min(0).max(100).optional(),
   }),
 
   updateTeamMember: z.object({
     name: z.string().optional(),
     phone: z.string().optional(),
+    commissionPercent: z.coerce.number().min(0).max(100).nullable().optional(),
   }),
 
   availabilityQuery: z.object({
     date: dateStr,
     durationMin: z.coerce.number().positive().optional(),
+    staffId: z.string().optional(),
+  }),
+
+  forgotPassword: z.object({
+    email: z.string().trim().email('E-mail inválido.'),
+  }),
+
+  resetPasswordWithCode: z.object({
+    email: z.string().trim().email('E-mail inválido.'),
+    code: nonEmpty,
+    newPassword: z.string().min(6, 'A nova senha deve ter ao menos 6 caracteres.'),
   }),
 };

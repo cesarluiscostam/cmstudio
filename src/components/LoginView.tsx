@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { api } from '../lib/api';
-import { AlertCircle, ArrowRight, ShieldAlert, Info } from 'lucide-react';
+import { useToast } from '../lib/ui';
+import { AlertCircle, ArrowRight, ArrowLeft, ShieldAlert, Info, MessageSquare } from 'lucide-react';
 
 interface LoginViewProps {
   onSuccess: (user: any, company: any) => void;
@@ -13,11 +14,70 @@ interface LoginViewProps {
 }
 
 export default function LoginView({ onSuccess, onNavigateToRegister }: LoginViewProps) {
+  const showToast = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
+
+  // Self-service password reset: request a code by email -> code gets SMS'd to the phone on file.
+  const [forgotStep, setForgotStep] = useState<'request' | 'code'>('request');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotCode, setForgotCode] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+
+  const resetForgotState = () => {
+    setForgotMode(false);
+    setForgotStep('request');
+    setForgotEmail('');
+    setForgotCode('');
+    setForgotNewPassword('');
+    setForgotConfirmPassword('');
+    setForgotError('');
+  };
+
+  const handleForgotRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotLoading(true);
+    try {
+      await api.forgotPassword(forgotEmail);
+      setForgotStep('code');
+    } catch (err: any) {
+      setForgotError(err.message || 'Erro ao solicitar redefinição de senha.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleForgotReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    if (forgotNewPassword.length < 6) {
+      setForgotError('A nova senha deve ter ao menos 6 caracteres.');
+      return;
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      setForgotError('As senhas digitadas não coincidem.');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      await api.resetPasswordWithCode({ email: forgotEmail, code: forgotCode, newPassword: forgotNewPassword });
+      setEmail(forgotEmail);
+      setPassword('');
+      resetForgotState();
+      showToast('Senha redefinida! Faça login com a nova senha.');
+    } catch (err: any) {
+      setForgotError(err.message || 'Código inválido ou expirado.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   // States for force password change flow (first access)
   const [forceChangeMode, setForceChangeMode] = useState(false);
@@ -188,24 +248,120 @@ export default function LoginView({ onSuccess, onNavigateToRegister }: LoginView
           <h2 className="mt-6 text-center text-3xl font-display font-bold tracking-tight text-ink">
             Recuperar senha
           </h2>
+          <p className="mt-2 text-center text-sm text-ink-dim">
+            {forgotStep === 'request'
+              ? 'Enviaremos um código por SMS para o telefone cadastrado na sua conta.'
+              : `Digite o código enviado por SMS e escolha sua nova senha.`}
+          </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-card py-8 px-4 shadow-sm border border-ink/8 rounded-2xl sm:px-10">
-            <div className="rounded-xl bg-brass-soft p-4 border border-brass/20 flex gap-3">
-              <Info className="h-5 w-5 text-brass flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-ink">
-                <p className="font-medium">Ainda não temos redefinição automática por e-mail.</p>
-                <p className="mt-1 text-ink-dim">
-                  Entre em contato com o administrador da sua barbearia ou com o suporte da plataforma
-                  para receber uma senha temporária.
-                </p>
+            {forgotError && (
+              <div className="mb-4 rounded-xl bg-red-50 p-3.5 border border-red-100 text-sm text-red-700 flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>{forgotError}</span>
               </div>
-            </div>
+            )}
+
+            {forgotStep === 'request' ? (
+              <form className="space-y-5" onSubmit={handleForgotRequest}>
+                <div>
+                  <label className="block text-sm font-medium text-ink-dim">Seu E-mail de acesso</label>
+                  <div className="mt-1">
+                    <input
+                      type="email"
+                      required
+                      autoFocus
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="voce@suaempresa.com"
+                      className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full flex justify-center items-center gap-1.5 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-paper bg-ink hover:opacity-90 focus:outline-none disabled:opacity-60 cursor-pointer"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {forgotLoading ? 'Enviando...' : 'Enviar código por SMS'}
+                </button>
+              </form>
+            ) : (
+              <form className="space-y-5" onSubmit={handleForgotReset}>
+                <div className="rounded-xl bg-brass-soft p-3.5 border border-brass/20 flex gap-2.5">
+                  <Info className="h-4 w-4 text-brass flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-ink-dim">
+                    Se esse e-mail existir e tiver telefone cadastrado, um código de 6 dígitos foi enviado por SMS. Válido por 15 minutos.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-ink-dim">Código recebido por SMS</label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      required
+                      autoFocus
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={forgotCode}
+                      onChange={(e) => setForgotCode(e.target.value.replace(/\D/g, ''))}
+                      placeholder="000000"
+                      className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm tracking-[0.3em] text-center font-mono"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-ink-dim">Nova Senha</label>
+                  <div className="mt-1">
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={forgotNewPassword}
+                      onChange={(e) => setForgotNewPassword(e.target.value)}
+                      placeholder="Mínimo de 6 caracteres"
+                      className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-ink-dim">Confirmar Nova Senha</label>
+                  <div className="mt-1">
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={forgotConfirmPassword}
+                      onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                      placeholder="Repita a nova senha"
+                      className="appearance-none block w-full px-3 py-2.5 border border-ink/10 rounded-xl placeholder-ink-dim/50 focus:outline-none focus:ring-1 focus:ring-ink focus:border-ink text-sm"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-paper bg-ink hover:opacity-90 focus:outline-none disabled:opacity-60 cursor-pointer"
+                >
+                  {forgotLoading ? 'Salvando...' : 'Redefinir senha'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForgotStep('request')}
+                  className="w-full flex items-center justify-center gap-1 text-xs font-semibold text-ink-dim hover:text-ink cursor-pointer"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" /> Usar outro e-mail / reenviar código
+                </button>
+              </form>
+            )}
+
             <button
               type="button"
-              onClick={() => setForgotMode(false)}
-              className="mt-4 w-full flex justify-center py-2.5 px-4 border border-ink/10 rounded-xl shadow-sm text-sm font-medium text-ink-dim bg-card hover:bg-paper focus:outline-none"
+              onClick={resetForgotState}
+              className="mt-4 w-full flex justify-center py-2.5 px-4 border border-ink/10 rounded-xl shadow-sm text-sm font-medium text-ink-dim bg-card hover:bg-paper focus:outline-none cursor-pointer"
             >
               Voltar para o login
             </button>

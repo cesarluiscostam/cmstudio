@@ -591,6 +591,7 @@ export default function App() {
           {activeTab === 'agenda' && (
             <AgendaView
               company={company}
+              user={user}
               onOpenNewAppointment={handleOpenNewAppointment}
               refreshTrigger={refreshTrigger}
               onRefresh={triggerRefresh}
