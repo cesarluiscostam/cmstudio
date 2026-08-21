@@ -41,15 +41,12 @@ export function isWorkDay(settings: Pick<CompanySettings, 'workDays'>, dateStr: 
   return settings.workDays.includes(dayOfWeek);
 }
 
-// Generates every bookable slot for a day given business hours/lunch break, excluding slots where
-// a booking of `requestedDurationMin` would either overlap an existing appointment or run past closing
-// time. Pass `minTimeStr` (current wall-clock "HH:MM") when the requested day is today, so slots that
-// have already gone by aren't offered — the caller decides this since this function has no notion of
-// "today" on its own.
-//
-// Slots step by the requested service's own duration (not a fixed configured interval), starting from
-// opening time — so a 90-minute service is offered every 90 minutes and a 30-minute one every 30,
-// instead of every service being forced onto the same generic grid and leaving awkward unbookable gaps.
+// Generates every bookable slot for a day given business hours/lunch break, packing slots by the
+// requested service's own duration (not a fixed configured interval) into the day's actual free gaps
+// — so the moment an appointment ends becomes the next offered slot, rather than being constrained to
+// a rigid grid anchored at opening time. Pass `minTimeStr` (current wall-clock "HH:MM") when the
+// requested day is today, so slots that have already gone by aren't offered — the caller decides this
+// since this function has no notion of "today" on its own.
 export function generateAvailableSlots(
   settings: Pick<CompanySettings, 'openTime' | 'closeTime' | 'lunchStart' | 'lunchEnd'>,
   bookedRanges: BookedRange[] = [],
@@ -60,21 +57,45 @@ export function generateAvailableSlots(
   const endMins = timeToMinutes(settings.closeTime);
   const duration = requestedDurationMin ?? 30;
 
-  // Treat lunch as just another booked range so hasTimeConflict rejects any slot that would run
-  // into it, not only ones literally starting during lunch (a real gap the old fixed-grid version
-  // rarely hit, but a duration-based step makes appointments bleed into lunch far more likely).
-  const blockedRanges = [...bookedRanges];
+  // Lunch is just another blocked range alongside real bookings, so a candidate slot that would run
+  // into it (not only ones literally starting during lunch) gets skipped the same way.
+  const busy: Array<[number, number]> = bookedRanges.map(b => {
+    const s = timeToMinutes(b.time);
+    return [s, s + b.totalDurationMin] as [number, number];
+  });
   if (settings.lunchStart && settings.lunchEnd) {
-    const lunchDuration = timeToMinutes(settings.lunchEnd) - timeToMinutes(settings.lunchStart);
-    blockedRanges.push({ time: settings.lunchStart, totalDurationMin: lunchDuration });
+    busy.push([timeToMinutes(settings.lunchStart), timeToMinutes(settings.lunchEnd)]);
+  }
+  busy.sort((a, b) => a[0] - b[0]);
+
+  // Merge overlapping/touching busy ranges so the walk below only has to deal with clean, disjoint blocks.
+  const merged: Array<[number, number]> = [];
+  for (const range of busy) {
+    const last = merged[merged.length - 1];
+    if (last && range[0] <= last[1]) {
+      last[1] = Math.max(last[1], range[1]);
+    } else {
+      merged.push([...range]);
+    }
   }
 
+  // Walk the day: pack as many duration-spaced slots as fit before each busy block, then jump the
+  // cursor past it and continue — this is what makes 08:15 show up right after a 7:15-8:15 booking
+  // instead of being skipped over by a grid that never lands exactly there.
   const slots: string[] = [];
-  for (let m = startMins; m + duration <= endMins; m += duration) {
-    slots.push(minutesToTime(m));
+  let cursor = startMins;
+  for (const [busyStart, busyEnd] of merged) {
+    const gapEnd = Math.min(busyStart, endMins);
+    while (cursor + duration <= gapEnd) {
+      slots.push(minutesToTime(cursor));
+      cursor += duration;
+    }
+    cursor = Math.max(cursor, busyEnd);
+  }
+  while (cursor + duration <= endMins) {
+    slots.push(minutesToTime(cursor));
+    cursor += duration;
   }
 
-  return slots
-    .filter(slot => !minTimeStr || slot >= minTimeStr)
-    .filter(slot => !hasTimeConflict(blockedRanges, slot, duration));
+  return slots.filter(slot => !minTimeStr || slot >= minTimeStr);
 }

@@ -110,4 +110,20 @@ describe('generateAvailableSlots', () => {
     const slots = generateAvailableSlots(settings, []);
     expect(slots).toContain('09:00');
   });
+
+  it('offers the slot right after a booking ends even when it does not land on a duration-multiple grid', () => {
+    // Real-world case: a 07:00 open, 60-minute service, with an existing 07:15-08:15 booking. A grid
+    // fixed at 07:00/08:00/09:00... never lands on 08:15, so it wrongly skipped straight past it.
+    const wideOpen = { openTime: '07:00', closeTime: '19:30', lunchStart: '12:00', lunchEnd: '13:00' };
+    const booked = [
+      { time: '07:15', totalDurationMin: 60 },
+      { time: '09:30', totalDurationMin: 30 },
+      { time: '10:00', totalDurationMin: 60 },
+      { time: '11:00', totalDurationMin: 60 },
+      { time: '15:00', totalDurationMin: 30 },
+      { time: '17:00', totalDurationMin: 30 },
+    ];
+    const slots = generateAvailableSlots(wideOpen, booked, 60);
+    expect(slots).toEqual(['08:15', '13:00', '14:00', '15:30', '17:30', '18:30']);
+  });
 });
