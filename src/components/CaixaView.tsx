@@ -697,7 +697,7 @@ export default function CaixaView({
                         type="number"
                         required
                         min={1}
-                        value={quantity}
+                        value={quantity || ''}
                         onChange={(e) => setQuantity(Number(e.target.value))}
                         className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       />

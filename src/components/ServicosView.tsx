@@ -277,7 +277,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     required
                     min={5}
                     step={5}
-                    value={durationMin}
+                    value={durationMin || ''}
                     onChange={(e) => setDurationMin(Number(e.target.value))}
                     className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
@@ -289,7 +289,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     required
                     min={0}
                     step={1}
-                    value={price}
+                    value={price || ''}
                     onChange={(e) => setPrice(Number(e.target.value))}
                     className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
@@ -373,7 +373,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     required
                     min={5}
                     step={5}
-                    value={durationMin}
+                    value={durationMin || ''}
                     onChange={(e) => setDurationMin(Number(e.target.value))}
                     className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
@@ -385,7 +385,7 @@ export default function ServicosView({ refreshTrigger, onRefresh }: ServicosView
                     required
                     min={0}
                     step={1}
-                    value={price}
+                    value={price || ''}
                     onChange={(e) => setPrice(Number(e.target.value))}
                     className="w-full border border-ink/10 p-2.5 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
