@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
 import { formatPhoneBR } from '../lib/phone';
-import { useToast } from '../lib/ui';
+import { useToast, useConfirm } from '../lib/ui';
 import { Service, Company, CompanySettings } from '../types';
 import {
   Clock,
@@ -36,6 +36,7 @@ interface PublicBookingViewProps {
 
 export default function PublicBookingView({ slug, onBackToAdmin }: PublicBookingViewProps) {
   const showToast = useToast();
+  const confirmDialog = useConfirm();
   const [company, setCompany] = useState<Company | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -229,11 +230,17 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
     }
   };
 
-  const handleCancelMyAppointment = async (id: string) => {
+  const handleCancelMyAppointment = async (apt: any) => {
+    const confirmed = await confirmDialog(
+      `Deseja mesmo cancelar seu horário de ${apt.date.split('-').reverse().join('/')} às ${apt.time}?`,
+      { danger: true, confirmLabel: 'Cancelar Agendamento', cancelLabel: 'Voltar' }
+    );
+    if (!confirmed) return;
+
     try {
-      setCancellingId(id);
-      await api.cancelPublicAppointment(id, managePhone);
-      setMyAppointments(prev => prev.filter(a => a.id !== id));
+      setCancellingId(apt.id);
+      await api.cancelPublicAppointment(apt.id, managePhone);
+      setMyAppointments(prev => prev.filter(a => a.id !== apt.id));
       showToast('Agendamento cancelado.');
     } catch (err: any) {
       showToast(err.message || 'Erro ao cancelar agendamento.', 'error');
@@ -453,7 +460,7 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleCancelMyAppointment(apt.id)}
+                      onClick={() => handleCancelMyAppointment(apt)}
                       disabled={cancellingId === apt.id}
                       className="w-full py-2 bg-card border border-bad/30 text-bad text-xs font-bold rounded-lg hover:bg-bad/10 transition disabled:opacity-50 cursor-pointer"
                     >
