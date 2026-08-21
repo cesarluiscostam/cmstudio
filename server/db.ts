@@ -32,6 +32,9 @@ function mapCompany(row: any): Company {
     businessType: row.business_type ?? undefined,
     primaryColor: row.primary_color ?? undefined,
     secondaryColor: row.secondary_color ?? undefined,
+    backgroundColor: row.background_color ?? undefined,
+    menuColor: row.menu_color ?? undefined,
+    textColor: row.text_color ?? undefined,
     subscriptionFee: row.subscription_fee !== null ? Number(row.subscription_fee) : undefined,
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
   };
@@ -184,10 +187,11 @@ export const dbOperations = {
   },
   createCompany: async (company: Company): Promise<Company> => {
     await pool.query(
-      `INSERT INTO companies (id, name, slug, phone, address, instagram, logo_url, cover_photo_url, business_type, primary_color, secondary_color, subscription_fee, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      `INSERT INTO companies (id, name, slug, phone, address, instagram, logo_url, cover_photo_url, business_type, primary_color, secondary_color, background_color, menu_color, text_color, subscription_fee, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [company.id, company.name, company.slug, company.phone, company.address ?? null, company.instagram ?? null,
        company.logoUrl ?? null, company.coverPhotoUrl ?? null, company.businessType ?? null, company.primaryColor ?? null, company.secondaryColor ?? null,
+       company.backgroundColor ?? null, company.menuColor ?? null, company.textColor ?? null,
        company.subscriptionFee ?? null, company.createdAt]
     );
     return company;
@@ -197,9 +201,10 @@ export const dbOperations = {
     if (!existing) return null;
     const merged = { ...existing, ...updated };
     await pool.query(
-      `UPDATE companies SET name=$2, slug=$3, phone=$4, address=$5, instagram=$6, logo_url=$7, cover_photo_url=$8, business_type=$9, primary_color=$10, secondary_color=$11, subscription_fee=$12 WHERE id=$1`,
+      `UPDATE companies SET name=$2, slug=$3, phone=$4, address=$5, instagram=$6, logo_url=$7, cover_photo_url=$8, business_type=$9, primary_color=$10, secondary_color=$11, background_color=$12, menu_color=$13, text_color=$14, subscription_fee=$15 WHERE id=$1`,
       [id, merged.name, merged.slug, merged.phone, merged.address ?? null, merged.instagram ?? null,
        merged.logoUrl ?? null, merged.coverPhotoUrl ?? null, merged.businessType ?? null, merged.primaryColor ?? null, merged.secondaryColor ?? null,
+       merged.backgroundColor ?? null, merged.menuColor ?? null, merged.textColor ?? null,
        merged.subscriptionFee ?? null]
     );
     return dbOperations.getCompanyById(id);

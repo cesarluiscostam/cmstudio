@@ -132,6 +132,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS commission_percent NUMERIC;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires_at TIMESTAMPTZ;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS min_stock INTEGER NOT NULL DEFAULT 5;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS background_color TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS menu_color TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS text_color TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_users_company ON users(company_id);
 CREATE INDEX IF NOT EXISTS idx_services_company ON services(company_id);

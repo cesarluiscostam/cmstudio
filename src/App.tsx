@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { api } from './lib/api';
+import { buildBrandStyle } from './lib/theme';
 import { Company, User } from './types';
 
 // Login is the very first thing anyone sees, so it stays a static import — no spinner-before-spinner.
@@ -326,10 +327,7 @@ export default function App() {
   }
 
   // Dynamic Branding Stylesheet injection
-  const brandStyle = {
-    '--color-brand-primary': company?.primaryColor || '#ba8b3f',
-    '--color-brand-secondary': company?.secondaryColor || '#6f2f40',
-  } as React.CSSProperties;
+  const brandStyle = buildBrandStyle(company);
 
   // Shared notification dropdown panel — rendered from both the mobile header rail and the
   // desktop top bar bell buttons, since each only exists in one of the two layouts.

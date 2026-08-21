@@ -62,6 +62,9 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
   const [businessType, setBusinessType] = useState(company?.businessType || 'barbershop');
   const [primaryColor, setPrimaryColor] = useState(company?.primaryColor || '#ba8b3f');
   const [secondaryColor, setSecondaryColor] = useState(company?.secondaryColor || '#6f2f40');
+  const [backgroundColor, setBackgroundColor] = useState(company?.backgroundColor || '#f4ead9');
+  const [menuColor, setMenuColor] = useState(company?.menuColor || '#182821');
+  const [textColor, setTextColor] = useState(company?.textColor || '#241c13');
 
   useEffect(() => {
     if (company) {
@@ -74,6 +77,9 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
       setBusinessType(company.businessType || 'barbershop');
       setPrimaryColor(company.primaryColor || '#ba8b3f');
       setSecondaryColor(company.secondaryColor || '#6f2f40');
+      setBackgroundColor(company.backgroundColor || '#f4ead9');
+      setMenuColor(company.menuColor || '#182821');
+      setTextColor(company.textColor || '#241c13');
     }
   }, [company]);
 
@@ -156,6 +162,9 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
         businessType,
         primaryColor,
         secondaryColor,
+        backgroundColor,
+        menuColor,
+        textColor,
         phone: shopPhone,
         address: shopAddress,
         instagram: shopInstagram
@@ -448,32 +457,116 @@ export default function ConfiguracoesView({ company, user, refreshTrigger, onRef
                 </div>
               </div>
 
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[10px] font-black text-ink-dim">FUNDO, MENU E TEXTO</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBackgroundColor('#f4ead9');
+                      setMenuColor('#182821');
+                      setTextColor('#241c13');
+                    }}
+                    className="text-[10px] font-bold text-brand-primary hover:underline cursor-pointer"
+                  >
+                    Restaurar padrão
+                  </button>
+                </div>
+                <p className="text-[10px] text-ink-dim mb-2">Aplicado no painel e na página pública de agendamento. Escolha combinações com bom contraste entre fundo e texto.</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[9px] font-black text-ink-dim mb-1">FUNDO</label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="color"
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        className="h-8 w-8 rounded cursor-pointer border border-ink/10 flex-shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        className="w-full border border-ink/10 p-1 rounded text-[10px] font-mono focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] font-black text-ink-dim mb-1">MENU</label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="color"
+                        value={menuColor}
+                        onChange={(e) => setMenuColor(e.target.value)}
+                        className="h-8 w-8 rounded cursor-pointer border border-ink/10 flex-shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={menuColor}
+                        onChange={(e) => setMenuColor(e.target.value)}
+                        className="w-full border border-ink/10 p-1 rounded text-[10px] font-mono focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] font-black text-ink-dim mb-1">TEXTO</label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="color"
+                        value={textColor}
+                        onChange={(e) => setTextColor(e.target.value)}
+                        className="h-8 w-8 rounded cursor-pointer border border-ink/10 flex-shrink-0"
+                      />
+                      <input
+                        type="text"
+                        value={textColor}
+                        onChange={(e) => setTextColor(e.target.value)}
+                        className="w-full border border-ink/10 p-1 rounded text-[10px] font-mono focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Live preview: how these colors will actually look once saved (buttons, badges, active states) */}
               <div>
                 <label className="block text-[10px] font-black text-ink-dim mb-1.5">PRÉVIA</label>
                 <div
-                  className="rounded-lg border border-ink/10 p-3 space-y-2.5 bg-paper-dim/50"
-                  style={{ '--color-brand-primary': primaryColor, '--color-brand-secondary': secondaryColor } as React.CSSProperties}
+                  className="rounded-lg border border-ink/10 p-3 space-y-2.5 overflow-hidden"
+                  style={{
+                    '--color-brand-primary': primaryColor,
+                    '--color-brand-secondary': secondaryColor,
+                    '--color-paper': backgroundColor,
+                    '--color-rail': menuColor,
+                    '--color-ink': textColor,
+                    backgroundColor: 'var(--color-paper)',
+                    color: 'var(--color-ink)',
+                  } as React.CSSProperties}
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-brand-primary text-white flex items-center justify-center shadow-sm">
-                      <Building className="h-4 w-4" />
+                  <div className="flex items-center gap-2 -m-3 mb-0 p-2.5 bg-rail">
+                    <div className="h-7 w-7 rounded-lg bg-brand-primary text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                      <Building className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-xs font-bold text-brand-primary">{shopName || 'Sua Empresa'}</span>
+                    <span className="text-xs font-bold text-paper truncate">{shopName || 'Sua Empresa'}</span>
                   </div>
-                  <button
-                    type="button"
-                    disabled
-                    className="px-3 py-1.5 bg-brand-primary text-white text-[11px] font-bold rounded-lg shadow-xs cursor-default"
-                  >
-                    Botão de exemplo
-                  </button>
-                  <div
-                    className={`relative rounded-lg p-2.5 text-white text-[10px] font-semibold overflow-hidden ${!coverPhotoUrl ? 'bg-gradient-to-r from-brand-secondary to-brand-primary' : ''}`}
-                    style={coverPhotoUrl ? { backgroundImage: `url(${coverPhotoUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
-                  >
-                    {coverPhotoUrl && <div className="absolute inset-0 bg-ink/50" />}
-                    <span className="relative">Banner de exemplo (como o cliente vê ao agendar online)</span>
+                  <div className="pt-1 space-y-2.5">
+                    <span className="text-xs font-bold" style={{ color: 'var(--color-ink)' }}>Texto de exemplo</span>
+                    <button
+                      type="button"
+                      disabled
+                      className="block px-3 py-1.5 bg-brand-primary text-white text-[11px] font-bold rounded-lg shadow-xs cursor-default"
+                    >
+                      Botão de exemplo
+                    </button>
+                    <div
+                      className={`relative rounded-lg p-2.5 text-white text-[10px] font-semibold overflow-hidden ${!coverPhotoUrl ? 'bg-gradient-to-r from-brand-secondary to-brand-primary' : ''}`}
+                      style={coverPhotoUrl ? { backgroundImage: `url(${coverPhotoUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                    >
+                      {coverPhotoUrl && <div className="absolute inset-0 bg-ink/50" />}
+                      <span className="relative">Banner de exemplo (como o cliente vê ao agendar online)</span>
+                    </div>
                   </div>
                 </div>
               </div>

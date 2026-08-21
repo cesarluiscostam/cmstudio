@@ -15,6 +15,9 @@ export interface Company {
   businessType?: 'barbershop' | 'beauty_salon' | 'manicure' | 'spa' | 'other';
   primaryColor?: string; // Hex color for company branding (e.g. #ba8b3f)
   secondaryColor?: string; // Hex color
+  backgroundColor?: string; // Hex color — overrides the app's base background (--color-paper)
+  menuColor?: string; // Hex color — overrides the sidebar/menu background (--color-rail)
+  textColor?: string; // Hex color — overrides the main text color (--color-ink)
   subscriptionFee?: number; // Monthly SaaS fee paid by the company to the app owner
   createdAt: string;
 }

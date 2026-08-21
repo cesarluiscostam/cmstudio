@@ -16,7 +16,8 @@
   --color-brand-primary: #ba8b3f;
   --color-brand-secondary: #6f2f40;
 
-  /* Fixed platform chrome — not tenant-customizable, same role white/slate-50 played before. */
+  /* Platform defaults. --color-paper/--color-rail/--color-ink are tenant-customizable (Configurações)
+     via buildBrandStyle() overriding these same names directly — see src/lib/theme.ts. */
   --color-paper: #f4ead9;
   --color-paper-dim: #ece0c9;
   --color-card: #fdf8ee;

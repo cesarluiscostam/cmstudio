@@ -1017,7 +1017,7 @@ app.post('/api/saas/users/:id/reset-password', ah(async (req, res) => {
 
 app.put('/api/company/profile', validateBody(schemas.updateCompanyProfile), ah(async (req, res) => {
   const { companyId } = getTenant(req);
-  const { name, logoUrl, coverPhotoUrl, businessType, primaryColor, secondaryColor, phone, address, instagram } = req.body;
+  const { name, logoUrl, coverPhotoUrl, businessType, primaryColor, secondaryColor, backgroundColor, menuColor, textColor, phone, address, instagram } = req.body;
 
   const updated = await dbOperations.updateCompany(companyId, {
     name,
@@ -1026,6 +1026,9 @@ app.put('/api/company/profile', validateBody(schemas.updateCompanyProfile), ah(a
     businessType,
     primaryColor,
     secondaryColor,
+    backgroundColor,
+    menuColor,
+    textColor,
     phone,
     address,
     instagram

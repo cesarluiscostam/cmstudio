@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { getTodayStr } from '../lib/date';
+import { buildBrandStyle } from '../lib/theme';
 import { useToast, useConfirm } from '../lib/ui';
 import { Appointment, Company } from '../types';
 import { Clock, Check, X, LogOut, CalendarClock, Bell, Scissors } from 'lucide-react';
@@ -27,10 +28,7 @@ export default function TabletModeView({ company, onExit }: TabletModeViewProps)
   const [now, setNow] = useState(new Date());
   const [actingOnId, setActingOnId] = useState<string | null>(null);
 
-  const brandStyle = {
-    '--color-brand-primary': company?.primaryColor || '#ba8b3f',
-    '--color-brand-secondary': company?.secondaryColor || '#6f2f40',
-  } as React.CSSProperties;
+  const brandStyle = buildBrandStyle(company);
 
   const loadData = async () => {
     try {

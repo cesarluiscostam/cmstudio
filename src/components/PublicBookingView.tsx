@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
+import { buildBrandStyle } from '../lib/theme';
 import { getTodayStr } from '../lib/date';
 import { formatPhoneBR } from '../lib/phone';
 import { useToast, useConfirm } from '../lib/ui';
@@ -255,11 +256,8 @@ export default function PublicBookingView({ slug, onBackToAdmin }: PublicBooking
   const totalDuration = chosenServicesObjects.reduce((sum, s) => sum + s.durationMin, 0);
 
   // Same brand-color mechanism used by the backoffice (App.tsx), scoped to this standalone page
-  // so a customer opening the booking link sees the barbershop's own colors, not a fixed indigo theme.
-  const brandStyle = {
-    '--color-brand-primary': company?.primaryColor || '#ba8b3f',
-    '--color-brand-secondary': company?.secondaryColor || '#6f2f40',
-  } as React.CSSProperties;
+  // so a customer opening the booking link sees the barbershop's own colors, not a fixed theme.
+  const brandStyle = buildBrandStyle(company);
 
   // Cover photo backdrop for the company banner strip (dimmed for text contrast) — falls back
   // to the plain brand-color gradient via CSS classes when the company hasn't uploaded one.
